@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>揀貨單</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;background:#f5f5f7;color:#0F1111}
+.bar{position:sticky;top:0;z-index:10;padding:10px 14px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.bar.g{background:#2e7d32;color:#fff}.bar.y{background:#f9a825;color:#111}.bar.r{background:#c62828;color:#fff}
+.actions{display:flex;gap:8px;padding:8px 10px;background:#fff;border-bottom:1px solid #eee}
+.actions button{flex:1;padding:10px;border:0;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer}
+.scan-btn{background:#1976d2;color:#fff}.scan-btn:disabled{background:#aaa}
+.upload-btn{background:#FF9900;color:#fff}
+.tab{display:flex;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:40px;z-index:9}
+.tab button{flex:1;padding:11px;border:0;background:transparent;font-size:13px;font-weight:600;color:#666;cursor:pointer}
+.tab button.on{color:#1976d2;border-bottom:2px solid #1976d2}
+.list{padding:10px}
+.card{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.card img{width:100%;border-radius:8px;background:#f3f3f3;max-height:200px;object-fit:contain;margin-bottom:10px}
+.row{display:flex;gap:8px;align-items:center;margin:6px 0}
+.row label{flex:0 0 54px;font-size:12px;color:#666}
+.row input{flex:1;padding:8px;border:1px solid #D5D9D9;border-radius:6px;font-size:14px}
+.save{background:#1976d2;color:#fff;border:0;border-radius:8px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer}
+.pid{font-size:11px;color:#999;margin-top:4px}
+.empty{padding:40px;text-align:center;color:#888}
+.order-card{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.order-email{font-weight:700;font-size:14px;margin-bottom:4px}
+.order-meta{font-size:11px;color:#888;margin-bottom:8px}
+.item{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #f0f0f0}
+.item img{width:44px;height:44px;object-fit:contain;border-radius:4px;background:#f3f3f3;flex-shrink:0}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11px;color:#888;margin-top:2px}
+.item-qty{width:50px;padding:6px;border:1px solid #ddd;border-radius:6px;text-align:center;font-size:14px}
+.pick-btn{background:#2e7d32;color:#fff;border:0;border-radius:6px;padding:7px 10px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0}
+.spin{display:inline-block;width:24px;height:24px;border:2px solid #eee;border-top-color:#1976d2;border-radius:50%;animation:sp .8s linear infinite;margin:30px auto;display:block}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="bar" class="bar g">記帳器載入中…</div>
+<div class="actions">
+  <button class="scan-btn" id="scanBtn" onclick="scanNow()">🔍 立即掃描新照片</button>
+  <button class="upload-btn" onclick="alert('Task #6 完成後這裡會有：上傳 Shop2000 按鈕')">🏠 回家：上傳 Shop2000</button>
+</div>
+<div class="tab">
+  <button id="tabP" class="on" onclick="show('p')">商品（校對）</button>
+  <button id="tabO" onclick="show('o')">訂單（勾買到）</button>
+</div>
+<div id="panP" class="list"><div class="spin"></div></div>
+<div id="panO" class="list" style="display:none"><div class="spin"></div></div>
+
+<script>
+const GAS = 'https://silent-unit-718clineshop-proxy.jjahao.workers.dev';
+const params = new URLSearchParams(location.search);
+const BATCH = params.get('batch') || '好市多';
+const TOKEN = params.get('token') || 'lineshop2026';
+
+function api(view, extra) {
+  return GAS + '?view=' + view + '&batch=' + encodeURIComponent(BATCH) + '&token=' + encodeURIComponent(TOKEN) + (extra||'');
+}
+function fmt(n){return 'NT$'+Number(n).toLocaleString('zh-Hant')}
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function show(t) {
+  document.getElementById('tabP').className = t==='p'?'on':'';
+  document.getElementById('tabO').className = t==='o'?'on':'';
+  document.getElementById('panP').style.display = t==='p'?'':'none';
+  document.getElementById('panO').style.display = t==='o'?'':'none';
+}
+
+async function load() {
+  try {
+    const d = await fetch(api('picker_data')).then(x=>x.json());
+    if (d.ok===false) { alert('Token 錯誤: '+d.error); return; }
+    renderBudget(d.budget);
+    renderProducts(d.products);
+    renderOrders(d.orders);
+  } catch(e) {
+    document.getElementById('bar').textContent = '載入失敗: '+e;
+  }
+}
+
+function renderBudget(r) {
+  const b = document.getElementById('bar');
+  b.className = 'bar '+(r.status==='red'?'r':r.status==='yellow'?'y':'g');
+  b.innerHTML = '<span>📸 '+r.photos+' 張 · '+r.calls+' 次呼叫</span><span>NT$'+r.today_twd+' / '+r.limit_twd+'</span>';
+}
+
+function renderProducts(r) {
+  const el = document.getElementById('panP');
+  const rows = r.rows || [];
+  if (!rows.length) { el.innerHTML = '<div class="empty">尚無商品<br><small>拍照丟進 Drive 資料夾後按掃描</small></div>'; return; }
+  el.innerHTML = rows.map(p => `
+    <div class="card">
+      <img src="${esc(p.image_url)}" onerror="this.style.background='#eee'">
+      <div class="row"><label>名稱</label><input id="n_${p.photo_id}" value="${esc(p.name_final||p.name_jp||'')}"></div>
+      <div class="row"><label>台幣</label><input id="t_${p.photo_id}" type="number" value="${p.price_twd}"></div>
+      <div class="row"><label>條碼</label><input id="b_${p.photo_id}" value="${esc(p.barcode||'')}"><button class="save" onclick="saveP('${p.photo_id}')">存</button></div>
+      <div class="pid">ID: ${p.photo_id} · ¥${p.price_jpy} · ${p.note||''}</div>
+    </div>`).join('');
+}
+
+function renderOrders(r) {
+  const el = document.getElementById('panO');
+  const orders = r.orders || [];
+  if (!orders.length) { el.innerHTML = '<div class="empty">尚無訂單<br><small>客戶下單後出現在這</small></div>'; return; }
+  const byEmail = {};
+  orders.forEach(o => { (byEmail[o.email]=byEmail[o.email]||[]).push(o); });
+  let html = '';
+  for (const email in byEmail) {
+    const lst = byEmail[email];
+    let tot = 0; lst.forEach(o => { if(o.picked>0) tot += o.picked*Number(o.product.price_twd); });
+    html += `<div class="order-card">
+      <div class="order-email">📧 ${esc(email)}</div>
+      <div class="order-meta">${lst[0].ts} · 已買到合計 ${fmt(tot)}</div>`;
+    lst.forEach(o => {
+      const pk = o.picked==null ? o.qty : o.picked;
+      const stat = o.status||'待處理';
+      const sc = stat==='買到'?'#2e7d32':stat==='缺貨'?'#c62828':stat==='部分'?'#f9a825':'#666';
+      const tsafe = String(o.ts).replace(/[^0-9]/g,'');
+      html += `<div class="item">
+        <img src="${esc(o.product.image||'')}" onerror="this.style.background='#eee'">
+        <div class="item-info">
+          <div class="item-name">${esc(o.product.name||'(無)')}</div>
+          <div class="item-meta">要 ${o.qty} 件 · ${fmt(o.product.price_twd)} · <span style="color:${sc};font-weight:700">${stat}</span></div>
+        </div>
+        <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" id="pk_${tsafe}_${o.photo_id}">
+        <button class="pick-btn" onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty})">勾</button>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  document.getElementById('panO').innerHTML = html;
+}
+
+async function saveP(pid) {
+  const name = document.getElementById('n_'+pid).value;
+  const price = document.getElementById('t_'+pid).value;
+  const bc = document.getElementById('b_'+pid).value;
+  try {
+    const r = await fetch(api('save_product','&pid='+encodeURIComponent(pid)+'&name='+encodeURIComponent(name)+'&price='+price+'&bc='+encodeURIComponent(bc))).then(x=>x.json());
+    alert(r.ok ? '✅ 已存' : '失敗: '+r.error);
+  } catch(e) { alert('失敗: '+e); }
+}
+
+async function pickIt(ts, email, pid, wantQty) {
+  const tsafe = String(ts).replace(/[^0-9]/g,'');
+  const inp = document.getElementById('pk_'+tsafe+'_'+pid);
+  const pk = Number(inp.value);
+  const status = pk===0?'缺貨':pk>=wantQty?'買到':'部分';
+  try {
+    const r = await fetch(api('mark_picked','&ts='+encodeURIComponent(ts)+'&email='+encodeURIComponent(email)+'&pid='+encodeURIComponent(pid)+'&qty='+pk+'&status='+encodeURIComponent(status))).then(x=>x.json());
+    if (r.ok) load(); else alert('失敗: '+r.error);
+  } catch(e) { alert('失敗: '+e); }
+}
+
+async function scanNow() {
+  const btn = document.getElementById('scanBtn');
+  btn.disabled = true; btn.textContent = '🔍 掃描中… (每張約 3-5 秒)';
+  try {
+    const r = await fetch(api('scan')).then(x=>x.json());
+    const ok = (r.results||[]).filter(x=>x.ok).length;
+    const fail = (r.results||[]).filter(x=>!x.ok).length;
+    btn.textContent = '✅ 完成: +'+ok+' 張'+(fail?' / 失敗 '+fail:'');
+    load();
+    setTimeout(()=>{ btn.disabled=false; btn.textContent='🔍 立即掃描新照片'; }, 3000);
+  } catch(e) {
+    btn.textContent = '❌ '+e;
+    setTimeout(()=>{ btn.disabled=false; btn.textContent='🔍 立即掃描新照片'; }, 3000);
+  }
+}
+
+load();
+</script>
+</body>
+</html>
