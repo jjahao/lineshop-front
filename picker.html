@@ -184,7 +184,8 @@ let _products = []; // keep for recalc
 async function load() {
   loadCfg();
   document.getElementById('batchTitle').textContent = BATCH;
-  const shopUrl = location.origin + '/index.html?batch=' + encodeURIComponent(BATCH);
+  const base = location.origin + location.pathname.replace(/\/[^/]*$/, '/');
+  const shopUrl = base + 'index.html?batch=' + encodeURIComponent(BATCH);
   const shopLink = document.getElementById('shopperLink');
   shopLink.href = shopUrl;
   shopLink.onclick = function(e) { e.preventDefault(); navigator.clipboard.writeText(shopUrl).then(()=>alert('已複製選購站連結！\n' + shopUrl)).catch(()=>window.open(shopUrl)); };

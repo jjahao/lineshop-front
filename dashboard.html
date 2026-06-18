@@ -108,7 +108,8 @@ function goToBatch(name) {
 }
 
 function shopperUrl(name) {
-  return location.origin + '/index.html?batch=' + encodeURIComponent(name);
+  const base = location.origin + location.pathname.replace(/\/[^/]*$/, '/');
+  return base + 'index.html?batch=' + encodeURIComponent(name);
 }
 
 async function loadBatches() {
