@@ -41,10 +41,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .item-name{font-size:14px;font-weight:700;color:#111;line-height:1.3}
 .item-name-zh{font-size:12px;color:#888;line-height:1.3}
 .item-meta{font-size:11px;color:#888;margin-top:2px}
-.item-bottom{display:flex;gap:8px;align-items:center}
-.item-bottom img{width:60px;height:60px;object-fit:contain;border-radius:6px;background:#f3f3f3;flex-shrink:0}
-.item-qty{flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;font-size:18px;font-weight:700}
-.pick-btn{background:#2e7d32;color:#fff;border:0;border-radius:8px;padding:10px 16px;font-size:15px;font-weight:700;cursor:pointer;flex-shrink:0;min-width:56px}
+.item-bottom{display:flex;gap:10px;align-items:stretch}
+.item-bottom img{width:72px;height:72px;object-fit:contain;border-radius:8px;background:#f3f3f3;flex-shrink:0;align-self:center}
+.item-right{display:flex;flex-direction:column;gap:6px;flex:1}
+.item-qty{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;font-size:20px;font-weight:700}
+.pick-btn{width:100%;background:#2e7d32;color:#fff;border:0;border-radius:10px;padding:13px;font-size:16px;font-weight:700;cursor:pointer}
 .pick-btn:disabled{background:#aaa}
 .spin{display:inline-block;width:24px;height:24px;border:2px solid #eee;border-top-color:#1976d2;border-radius:50%;animation:sp .8s linear infinite;margin:30px auto;display:block}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -335,8 +336,10 @@ function renderOrders(r) {
         </div>
         <div class="item-bottom">
           <img src="${esc(o.product.image||'')}" onerror="this.style.background='#eee'">
-          <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" ${isDone?'disabled':''} id="pk_${tsafe}_${o.photo_id}">
-          <button class="pick-btn" ${isDone?'disabled style="background:#aaa"':''} onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty},this.previousElementSibling)">勾</button>
+          <div class="item-right">
+            <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" ${isDone?'disabled':''} id="pk_${tsafe}_${o.photo_id}">
+            <button class="pick-btn" ${isDone?'disabled style="background:#aaa"':''} onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty},this.previousElementSibling)">✓ 勾選（已買到）</button>
+          </div>
         </div>
       </div>`;
     });
