@@ -176,15 +176,37 @@ async function createBatch() {
 }
 
 async function scanBatch(name, btn) {
-  btn.disabled = true; btn.textContent = '掃描中...';
+  btn.disabled = true; btn.textContent = '啟動中...';
   try {
     const r = await fetch(api('scan', '&batch=' + encodeURIComponent(name))).then(x => x.json());
-    btn.textContent = '✅ ' + (r.processed || 0) + ' 張';
-    setTimeout(() => { loadBatches(); }, 1500);
+    if (r.status === 'done') {
+      btn.textContent = '✅ 全部已掃';
+      setTimeout(() => { btn.disabled = false; btn.textContent = '🔍 掃描'; }, 2000);
+      return;
+    }
+    btn.textContent = '⏳ 掃描 ' + r.pending + ' 張...';
+    pollScanStatus(name, btn);
   } catch(e) {
-    btn.textContent = '❌ 失敗';
-    setTimeout(() => { btn.disabled = false; btn.textContent = '🔍 掃描'; }, 2000);
+    btn.textContent = '❌ ' + e;
+    setTimeout(() => { btn.disabled = false; btn.textContent = '🔍 掃描'; }, 3000);
   }
+}
+
+function pollScanStatus(name, btn) {
+  const poll = setInterval(async () => {
+    try {
+      const r = await fetch(api('scan_status', '&batch=' + encodeURIComponent(name))).then(x => x.json());
+      if (r.status === 'done') {
+        clearInterval(poll);
+        btn.textContent = '✅ ' + r.done + ' 筆完成';
+        loadBatches();
+        setTimeout(() => { btn.disabled = false; btn.textContent = '🔍 掃描'; }, 3000);
+      } else {
+        btn.textContent = '⏳ 已掃 ' + r.done + '/' + (r.done + r.pending) + '...';
+      }
+    } catch(_) {}
+  }, 5000);
+  setTimeout(() => clearInterval(poll), 600000);
 }
 
 loadBatches();
