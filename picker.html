@@ -36,13 +36,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .order-card{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
 .order-email{font-weight:700;font-size:14px;margin-bottom:4px}
 .order-meta{font-size:11px;color:#888;margin-bottom:8px}
-.item{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #f0f0f0}
-.item img{width:44px;height:44px;object-fit:contain;border-radius:4px;background:#f3f3f3;flex-shrink:0}
-.item-info{flex:1;min-width:0}
-.item-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid #f0f0f0}
+.item-top{display:flex;flex-direction:column;gap:2px}
+.item-name{font-size:14px;font-weight:700;color:#111;line-height:1.3}
+.item-name-zh{font-size:12px;color:#888;line-height:1.3}
 .item-meta{font-size:11px;color:#888;margin-top:2px}
-.item-qty{width:50px;padding:6px;border:1px solid #ddd;border-radius:6px;text-align:center;font-size:14px}
-.pick-btn{background:#2e7d32;color:#fff;border:0;border-radius:6px;padding:7px 10px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0}
+.item-bottom{display:flex;gap:8px;align-items:center}
+.item-bottom img{width:60px;height:60px;object-fit:contain;border-radius:6px;background:#f3f3f3;flex-shrink:0}
+.item-qty{flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;font-size:18px;font-weight:700}
+.pick-btn{background:#2e7d32;color:#fff;border:0;border-radius:8px;padding:10px 16px;font-size:15px;font-weight:700;cursor:pointer;flex-shrink:0;min-width:56px}
+.pick-btn:disabled{background:#aaa}
 .spin{display:inline-block;width:24px;height:24px;border:2px solid #eee;border-top-color:#1976d2;border-radius:50%;animation:sp .8s linear infinite;margin:30px auto;display:block}
 @keyframes sp{to{transform:rotate(360deg)}}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}
@@ -300,14 +303,20 @@ function renderOrders(r) {
       const stat = o.status||'待處理';
       const sc = stat==='買到'?'#2e7d32':stat==='缺貨'?'#c62828':stat==='部分'?'#f9a825':'#666';
       const tsafe = String(o.ts).replace(/[^0-9]/g,'');
+      const jpName = esc(o.product.name||'');
+      const zhName = esc(o.product.name_zh||'');
+      const isDone = stat==='買到'||stat==='缺貨';
       html += `<div class="item">
-        <img src="${esc(o.product.image||'')}" onerror="this.style.background='#eee'">
-        <div class="item-info">
-          <div class="item-name">${esc(o.product.name_zh || o.product.name||'(無)')}</div>
-          <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span style="color:${sc};font-weight:700">${stat}</span></div>
+        <div class="item-top">
+          <div class="item-name">${jpName||zhName||'(無)'}</div>
+          ${zhName&&jpName?`<div class="item-name-zh">${zhName}</div>`:''}
+          <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span></div>
         </div>
-        <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" id="pk_${tsafe}_${o.photo_id}">
-        <button class="pick-btn" onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty},this.previousElementSibling)">勾</button>
+        <div class="item-bottom">
+          <img src="${esc(o.product.image||'')}" onerror="this.style.background='#eee'">
+          <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" ${isDone?'disabled':''} id="pk_${tsafe}_${o.photo_id}">
+          <button class="pick-btn" ${isDone?'disabled style="background:#aaa"':''} onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty},this.previousElementSibling)">勾</button>
+        </div>
       </div>`;
     });
     html += '</div>';
@@ -337,12 +346,30 @@ async function saveP(pid) {
 async function pickIt(ts, email, pid, wantQty, inpEl) {
   const inp = inpEl || document.getElementById('pk_'+String(ts).replace(/[^0-9]/g,'')+'_'+pid);
   if (!inp) { alert('找不到數量格，請重新整理頁面'); return; }
+  const btn = inp.nextElementSibling;
   const pk = Number(inp.value);
   const status = pk===0?'缺貨':pk>=wantQty?'買到':'部分';
+  const sc = status==='買到'?'#2e7d32':status==='缺貨'?'#c62828':status==='部分'?'#f9a825':'#666';
+  // 即時反應
+  btn.disabled = true; btn.textContent = '⏳'; inp.disabled = true;
   try {
     const r = await fetch(api('mark_picked','&ts='+encodeURIComponent(ts)+'&email='+encodeURIComponent(email)+'&pid='+encodeURIComponent(pid)+'&qty='+pk+'&status='+encodeURIComponent(status))).then(x=>x.json());
-    if (r.ok) load(); else alert('失敗: '+r.error);
-  } catch(e) { alert('失敗: '+e); }
+    if (r.ok) {
+      // 原地更新，不重載頁面
+      btn.textContent = '✓'; btn.style.background = sc;
+      const tsafe = String(ts).replace(/[^0-9]/g,'');
+      const statEl = document.querySelector('.stat-'+tsafe+'_'+pid);
+      if (statEl) { statEl.textContent = status; statEl.style.color = sc; }
+    } else {
+      btn.disabled = false; btn.textContent = '勾'; btn.style.background = '';
+      inp.disabled = false;
+      alert('失敗: '+r.error);
+    }
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '勾'; btn.style.background = '';
+    inp.disabled = false;
+    alert('失敗: '+e);
+  }
 }
 
 async function scanNow() {
