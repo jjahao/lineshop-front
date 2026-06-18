@@ -120,6 +120,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
     <div id="uploadNote" style="font-size:12px;color:#888;margin-top:10px;text-align:center">
       本機 daemon 收到後自動執行，約需 1-3 分鐘
     </div>
+    <button id="cancelUploadBtn" style="display:none;width:100%;margin-top:8px;padding:10px;background:#fff3e0;color:#e65100;border:1.5px solid #e65100;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer" onclick="doCancelUpload()">✕ 取消排隊</button>
     <button class="close-btn" onclick="closeUploadModal()">關閉</button>
   </div>
 </div>
@@ -489,15 +490,21 @@ async function checkUploadStatus() {
   } catch(_) {}
 }
 
+let _cancelStage = '';
+
 function applyStatus(r) {
   const { stage, status, result } = r;
   if (!stage || status === 'idle') return;
   const isProduct = stage === 'products';
   const btn = document.getElementById(isProduct ? 's1btn' : 's2btn');
   const info = document.getElementById(isProduct ? 's1info' : 's2info');
+  const cancelBtn = document.getElementById('cancelUploadBtn');
   if (status === 'pending') {
+    _cancelStage = stage;
+    if (cancelBtn) { cancelBtn.style.display = 'block'; cancelBtn.disabled = false; cancelBtn.textContent = '✕ 取消排隊'; }
     btn.className = 'stage-btn spin-btn'; btn.disabled = true; btn.textContent = '⏳ 本機執行中...';
   } else if (status === 'done') {
+    if (cancelBtn) cancelBtn.style.display = 'none';
     btn.className = 'stage-btn done'; btn.disabled = true; btn.textContent = '✅ 完成';
     info.textContent = result || '已完成';
     if (isProduct) {
@@ -509,11 +516,36 @@ function applyStatus(r) {
     }
     if (_uploadPollTimer) { clearInterval(_uploadPollTimer); _uploadPollTimer = null; }
   } else if (status === 'error') {
+    if (cancelBtn) cancelBtn.style.display = 'none';
     btn.className = 'stage-btn err'; btn.disabled = false;
     btn.textContent = '❌ 失敗（點重試）';
     info.textContent = result || '失敗，請查看 daemon log';
     btn.onclick = () => triggerStage(stage);
     if (_uploadPollTimer) { clearInterval(_uploadPollTimer); _uploadPollTimer = null; }
+  }
+}
+
+async function doCancelUpload() {
+  const cancelBtn = document.getElementById('cancelUploadBtn');
+  cancelBtn.disabled = true; cancelBtn.textContent = '⏳ 取消中...';
+  try {
+    const r = await fetch(api('cancel_upload') + '&stage=' + encodeURIComponent(_cancelStage)).then(x => x.json());
+    if (r.ok) {
+      cancelBtn.style.display = 'none';
+      if (_uploadPollTimer) { clearInterval(_uploadPollTimer); _uploadPollTimer = null; }
+      const isProduct = _cancelStage === 'products';
+      const btn = document.getElementById(isProduct ? 's1btn' : 's2btn');
+      btn.className = 'stage-btn go'; btn.disabled = false;
+      btn.textContent = isProduct ? `▶ 上架 ${_prodCount} 件商品` : `▶ 匯入 ${_orderCount} 筆訂單`;
+      btn.onclick = () => triggerStage(_cancelStage);
+      document.getElementById('uploadNote').textContent = '已取消，可重新排隊';
+    } else {
+      cancelBtn.disabled = false; cancelBtn.textContent = '✕ 取消排隊';
+      alert('取消失敗: ' + (r.error || '未知'));
+    }
+  } catch(e) {
+    cancelBtn.disabled = false; cancelBtn.textContent = '✕ 取消排隊';
+    alert('取消失敗: ' + e);
   }
 }
 
