@@ -13,6 +13,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .actions button{flex:1;padding:10px;border:0;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer}
 .scan-btn{background:#1976d2;color:#fff}.scan-btn:disabled{background:#aaa}
 .upload-btn{background:#FF9900;color:#fff}
+.settings-bar{background:#fff;padding:10px 12px;border-bottom:1px solid #eee}
+.settings-bar summary{font-size:13px;font-weight:700;color:#1976d2;cursor:pointer}
+.sf{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.sf label{font-size:12px;color:#555}
+.sf input,.sf select{padding:6px 8px;border:1px solid #D5D9D9;border-radius:6px;font-size:13px;width:80px}
+.sf select{width:auto}
 .tab{display:flex;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:40px;z-index:9}
 .tab button{flex:1;padding:11px;border:0;background:transparent;font-size:13px;font-weight:600;color:#666;cursor:pointer}
 .tab button.on{color:#1976d2;border-bottom:2px solid #1976d2}
@@ -21,8 +27,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .card img{width:100%;border-radius:8px;background:#f3f3f3;max-height:400px;object-fit:contain;margin-bottom:10px}
 .row{display:flex;gap:8px;align-items:center;margin:6px 0}
 .row label{flex:0 0 54px;font-size:12px;color:#666}
-.row input{flex:1;padding:8px;border:1px solid #D5D9D9;border-radius:6px;font-size:14px}
+.row input,.row .val{flex:1;padding:8px;border:1px solid #D5D9D9;border-radius:6px;font-size:14px}
+.row .val{border:0;color:#555;background:transparent}
 .save{background:#1976d2;color:#fff;border:0;border-radius:8px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer}
+.recalc{background:#f9a825;color:#111;border:0;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}
 .pid{font-size:11px;color:#999;margin-top:4px}
 .empty{padding:40px;text-align:center;color:#888}
 .order-card{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
@@ -59,6 +67,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
   <button class="scan-btn" id="scanBtn" onclick="scanNow()">🔍 立即掃描新照片</button>
   <button class="upload-btn" onclick="uploadModal()">🏠 回家：上傳 Shop2000</button>
 </div>
+
+<!-- 匯率與手續費設定 -->
+<div class="settings-bar">
+  <details id="settingsToggle">
+    <summary>⚙️ 匯率 / 手續費設定</summary>
+    <div class="sf">
+      <div><label>匯率 ¥1 =</label><br><input id="cfgRate" type="number" step="0.001" value="0.23"> TWD</div>
+      <div><label>手續費方式</label><br>
+        <select id="cfgFeeType">
+          <option value="pct">加 %</option>
+          <option value="jpy">每件加 ¥</option>
+          <option value="twd">每件加 NT$</option>
+        </select>
+      </div>
+      <div><label>手續費</label><br><input id="cfgFeeVal" type="number" step="1" value="10"></div>
+      <div style="display:flex;align-items:flex-end"><button class="recalc" onclick="recalcAll()">🔄 重算全部台幣</button></div>
+    </div>
+  </details>
+</div>
+
 <div class="tab">
   <button id="tabP" class="on" onclick="show('p')">商品（校對）</button>
   <button id="tabO" onclick="show('o')">訂單（勾買到）</button>
@@ -97,7 +125,45 @@ function api(view, extra) {
   return GAS + '?view=' + view + '&batch=' + encodeURIComponent(BATCH) + '&token=' + encodeURIComponent(TOKEN) + (extra||'');
 }
 function fmt(n){return 'NT$'+Number(n).toLocaleString('zh-Hant')}
+function fmtJpy(n){return '¥'+Number(n).toLocaleString('ja-JP')}
 function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+// ── 匯率/手續費設定（localStorage 保存） ────────────────────────────────────
+const LS_KEY = 'lineshop_picker_cfg';
+function loadCfg() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LS_KEY));
+    if (s) {
+      if (s.rate) document.getElementById('cfgRate').value = s.rate;
+      if (s.feeType) document.getElementById('cfgFeeType').value = s.feeType;
+      if (s.feeVal !== undefined) document.getElementById('cfgFeeVal').value = s.feeVal;
+    }
+  } catch(_) {}
+}
+function saveCfg() {
+  const cfg = { rate: getRate(), feeType: getFeeType(), feeVal: getFeeVal() };
+  localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+}
+function getRate() { return Number(document.getElementById('cfgRate').value) || 0.23; }
+function getFeeType() { return document.getElementById('cfgFeeType').value; }
+function getFeeVal() { return Number(document.getElementById('cfgFeeVal').value) || 0; }
+
+function calcTwd(jpy) {
+  jpy = Number(jpy) || 0;
+  const rate = getRate();
+  const ft = getFeeType();
+  const fv = getFeeVal();
+  let base = jpy;
+  if (ft === 'pct') base = jpy * (1 + fv / 100);
+  else if (ft === 'jpy') base = jpy + fv;
+  const twd = base * rate;
+  if (ft === 'twd') return Math.ceil(twd + fv);
+  return Math.ceil(twd);
+}
+
+['cfgRate','cfgFeeType','cfgFeeVal'].forEach(id => {
+  document.getElementById(id).addEventListener('change', saveCfg);
+});
 
 function show(t) {
   document.getElementById('tabP').className = t==='p'?'on':'';
@@ -106,11 +172,15 @@ function show(t) {
   document.getElementById('panO').style.display = t==='o'?'':'none';
 }
 
+let _products = []; // keep for recalc
+
 async function load() {
+  loadCfg();
   try {
     const d = await fetch(api('picker_data')).then(x=>x.json());
     if (d.ok===false) { alert('Token 錯誤: '+d.error); return; }
     renderBudget(d.budget);
+    _products = d.products.rows || [];
     renderProducts(d.products);
     renderOrders(d.orders);
   } catch(e) {
@@ -128,15 +198,37 @@ function renderProducts(r) {
   const el = document.getElementById('panP');
   const rows = r.rows || [];
   if (!rows.length) { el.innerHTML = '<div class="empty">尚無商品<br><small>拍照丟進 Drive 資料夾後按掃描</small></div>'; return; }
-  el.innerHTML = rows.map(p => `
-    <div class="card">
+  el.innerHTML = rows.map(p => {
+    const zh = p.name_zh || '';
+    const jp = p.name_final || p.name_jp || '';
+    return `
+    <div class="card" data-pid="${p.photo_id}">
       <img src="${esc(p.image_url)}" onerror="this.style.background='#eee'">
-      <div class="row"><label>名稱</label><input id="n_${p.photo_id}" value="${esc(p.name_final||p.name_jp||'')}"></div>
-      <div class="row"><label>日幣</label><span style="flex:1;padding:8px;font-size:14px;color:#555">¥${p.price_jpy||'-'}</span></div>
+      <div class="row"><label>日文</label><input id="n_${p.photo_id}" value="${esc(jp)}"></div>
+      <div class="row"><label>中文</label><input id="zh_${p.photo_id}" value="${esc(zh)}" placeholder="翻譯中…"></div>
+      <div class="row"><label>日幣</label><input id="j_${p.photo_id}" type="number" value="${p.price_jpy||0}" onchange="onJpyChange('${p.photo_id}')"></div>
       <div class="row"><label>台幣</label><input id="t_${p.photo_id}" type="number" value="${p.price_twd}"></div>
       <div class="row"><label>條碼</label><input id="b_${p.photo_id}" value="${esc(p.barcode||'')}"><button class="save" onclick="saveP('${p.photo_id}')">存</button></div>
       <div class="pid">ID: ${p.photo_id} · ${p.note||''}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+function onJpyChange(pid) {
+  const jpy = Number(document.getElementById('j_'+pid).value) || 0;
+  document.getElementById('t_'+pid).value = calcTwd(jpy);
+}
+
+function recalcAll() {
+  saveCfg();
+  document.querySelectorAll('.card[data-pid]').forEach(card => {
+    const pid = card.dataset.pid;
+    const jpyInput = document.getElementById('j_'+pid);
+    if (jpyInput) {
+      const twd = calcTwd(Number(jpyInput.value) || 0);
+      document.getElementById('t_'+pid).value = twd;
+    }
+  });
 }
 
 function renderOrders(r) {
@@ -160,8 +252,8 @@ function renderOrders(r) {
       html += `<div class="item">
         <img src="${esc(o.product.image||'')}" onerror="this.style.background='#eee'">
         <div class="item-info">
-          <div class="item-name">${esc(o.product.name||'(無)')}</div>
-          <div class="item-meta">要 ${o.qty} 件 · ${fmt(o.product.price_twd)} · <span style="color:${sc};font-weight:700">${stat}</span></div>
+          <div class="item-name">${esc(o.product.name_zh || o.product.name||'(無)')}</div>
+          <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span style="color:${sc};font-weight:700">${stat}</span></div>
         </div>
         <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" id="pk_${tsafe}_${o.photo_id}">
         <button class="pick-btn" onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty})">勾</button>
@@ -174,10 +266,19 @@ function renderOrders(r) {
 
 async function saveP(pid) {
   const name = document.getElementById('n_'+pid).value;
+  const zh = document.getElementById('zh_'+pid).value;
+  const jpy = document.getElementById('j_'+pid).value;
   const price = document.getElementById('t_'+pid).value;
   const bc = document.getElementById('b_'+pid).value;
   try {
-    const r = await fetch(api('save_product','&pid='+encodeURIComponent(pid)+'&name='+encodeURIComponent(name)+'&price='+price+'&bc='+encodeURIComponent(bc))).then(x=>x.json());
+    const r = await fetch(api('save_product',
+      '&pid='+encodeURIComponent(pid)+
+      '&name='+encodeURIComponent(name)+
+      '&zh='+encodeURIComponent(zh)+
+      '&jpy='+jpy+
+      '&price='+price+
+      '&bc='+encodeURIComponent(bc)
+    )).then(x=>x.json());
     alert(r.ok ? '✅ 已存' : '失敗: '+r.error);
   } catch(e) { alert('失敗: '+e); }
 }
@@ -214,7 +315,6 @@ let _prodCount = 0, _orderCount = 0, _uploadPollTimer = null;
 
 async function uploadModal() {
   document.getElementById('uploadOverlay').classList.add('on');
-  // 讀商品/訂單數
   try {
     const d = await fetch(api('picker_data')).then(x => x.json());
     _prodCount  = (d.products?.rows || []).length;
@@ -226,7 +326,6 @@ async function uploadModal() {
     s1btn.disabled = false;
     s1btn.textContent = `▶ 上架 ${_prodCount} 件商品`;
     s1btn.onclick = () => triggerStage('products');
-    // 查現有佇列狀態
     await checkUploadStatus();
   } catch(e) {
     document.getElementById('s1info').textContent = '讀取失敗: ' + e;
@@ -257,7 +356,7 @@ function startPollStatus(stage) {
   let count = 0;
   _uploadPollTimer = setInterval(async () => {
     count++;
-    if (count > 60) { clearInterval(_uploadPollTimer); return; } // 60次×5s=5分鐘超時
+    if (count > 60) { clearInterval(_uploadPollTimer); return; }
     await checkUploadStatus();
   }, 5000);
 }
@@ -281,7 +380,6 @@ function applyStatus(r) {
     btn.className = 'stage-btn done'; btn.disabled = true; btn.textContent = '✅ 完成';
     info.textContent = result || '已完成';
     if (isProduct) {
-      // 開放第 2 段
       const s2btn = document.getElementById('s2btn');
       s2btn.className = 'stage-btn go'; s2btn.disabled = false;
       s2btn.textContent = `▶ 匯入 ${_orderCount} 筆訂單`;
