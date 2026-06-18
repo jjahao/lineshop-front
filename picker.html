@@ -36,17 +36,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .order-card{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
 .order-email{font-weight:700;font-size:14px;margin-bottom:4px}
 .order-meta{font-size:11px;color:#888;margin-bottom:8px}
-.item{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid #f0f0f0}
-.item-top{display:flex;flex-direction:column;gap:2px}
-.item-name{font-size:14px;font-weight:700;color:#111;line-height:1.3}
-.item-name-zh{font-size:12px;color:#888;line-height:1.3}
-.item-meta{font-size:11px;color:#888;margin-top:2px}
-.item-bottom{display:flex;flex-direction:column;gap:8px}
-.item-bottom img{width:100%;max-height:180px;object-fit:contain;border-radius:8px;background:#f3f3f3}
-.item-right{display:flex;gap:8px;align-items:stretch}
-.item-qty{flex:1;padding:12px;border:1px solid #ddd;border-radius:8px;text-align:center;font-size:24px;font-weight:700}
-.pick-btn{flex:2;background:#2e7d32;color:#fff;border:0;border-radius:10px;padding:14px;font-size:16px;font-weight:700;cursor:pointer}
-.pick-btn:disabled{background:#aaa}
+.order-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 0}
+.grid-item{background:#f9f9f9;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px}
+.grid-item img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:6px;background:#f0f0f0}
+.item-name{font-size:11px;font-weight:700;color:#111;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.item-name-zh{font-size:10px;color:#888;line-height:1.2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.item-meta{font-size:10px;color:#888}
+.item-row{display:flex;gap:5px;margin-top:2px}
+.item-qty{flex:1;padding:8px 4px;border:1px solid #ddd;border-radius:6px;text-align:center;font-size:18px;font-weight:700;min-width:0}
+.pick-btn{flex:1.6;background:#2e7d32;color:#fff;border:0;border-radius:6px;padding:8px 4px;font-size:13px;font-weight:700;cursor:pointer}
+.pick-btn:disabled{background:#bbb}
 .spin{display:inline-block;width:24px;height:24px;border:2px solid #eee;border-top-color:#1976d2;border-radius:50%;animation:sp .8s linear infinite;margin:30px auto;display:block}
 @keyframes sp{to{transform:rotate(360deg)}}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}
@@ -320,6 +319,7 @@ function renderOrders(r) {
     html += `<div class="order-card">
       <div class="order-email">📧 ${esc(email)}</div>
       <div class="order-meta">${fmtTs(lst[0].ts)} · 已買到合計 ${fmt(tot)}</div>`;
+    html += `<div class="order-grid">`;
     lst.forEach(o => {
       const pk = o.picked==null ? o.qty : o.picked;
       const stat = o.status||'待處理';
@@ -328,22 +328,18 @@ function renderOrders(r) {
       const jpName = esc(o.product.name||'');
       const zhName = esc(o.product.name_zh||'');
       const isDone = stat==='買到'||stat==='缺貨';
-      html += `<div class="item">
-        <div class="item-top">
-          <div class="item-name">${jpName||zhName||'(無)'}</div>
-          ${zhName&&jpName?`<div class="item-name-zh">${zhName}</div>`:''}
-          <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span>${isDone?` <button style="font-size:10px;padding:2px 6px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;color:#666" onclick="unlockItem('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',this)">解鎖</button>`:''}</div>
-        </div>
-        <div class="item-bottom">
-          <img src="${esc(o.product.image||'')}" onerror="this.style.background='#e8e8e8'" style="min-height:80px">
-          <div class="item-right">
-            <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" ${isDone?'disabled':''} id="pk_${tsafe}_${o.photo_id}">
-            <button class="pick-btn" ${isDone?'disabled style="background:#aaa"':''} onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty},this.previousElementSibling)">✓ 勾選</button>
-          </div>
+      html += `<div class="grid-item">
+        <img src="${esc(o.product.image||'')}" onerror="this.style.background='#e0e0e0'">
+        <div class="item-name">${jpName||zhName||'(無)'}</div>
+        ${zhName&&jpName?`<div class="item-name-zh">${zhName}</div>`:''}
+        <div class="item-meta">要${o.qty}件 · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span>${isDone?` <button style="font-size:9px;padding:1px 4px;border:1px solid #ccc;border-radius:3px;background:#fff;cursor:pointer;color:#666" onclick="unlockItem('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',this)">解鎖</button>`:''}</div>
+        <div class="item-row">
+          <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" ${isDone?'disabled':''} id="pk_${tsafe}_${o.photo_id}">
+          <button class="pick-btn" ${isDone?'disabled':''} onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty},this.previousElementSibling)">✓勾</button>
         </div>
       </div>`;
     });
-    html += '</div>';
+    html += `</div></div>`;
   }
   document.getElementById('panO').innerHTML = html;
 }
