@@ -127,6 +127,14 @@ async function loadBatches() {
   }
 }
 
+function nextStepHint(b) {
+  if (b.status.startsWith('✅')) return '已上傳完成';
+  if (b.products === 0) return '👉 丟照片進 Drive，再按 🔍 掃描';
+  if (b.orders === 0)  return '👉 校對商品後，複製選購站連結傳給客戶';
+  if (b.picked === 0)  return '👉 現場買到後，進入揀貨單勾買到件數';
+  return '👉 採購完成！進揀貨單按「🏠 回家上傳」';
+}
+
 function batchCard(b) {
   const icon = b.status.charAt(0) === '✅' ? '📦' : b.status.charAt(0) === '🛍' ? '🛍️' : b.status.charAt(0) === '🛒' ? '🛒' : b.status.charAt(0) === '✏' ? '✏️' : '📸';
   const isDone = b.status.startsWith('✅');
@@ -136,6 +144,7 @@ function batchCard(b) {
     <div class="batch-info">
       <div class="batch-name">${esc(b.batch)}</div>
       <div class="batch-meta">${b.products} 商品 · ${b.orders} 訂單 · ${b.picked} 已勾 ${scanHtml}</div>
+      <div style="font-size:11px;color:#FF9900;margin-top:4px;font-weight:600">${nextStepHint(b)}</div>
     </div>
     <div class="batch-status">${b.status}</div>
   </div>`;

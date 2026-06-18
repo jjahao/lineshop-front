@@ -68,6 +68,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
   <a id="shopperLink" href="#" target="_blank" style="color:#FF9900;font-size:12px;text-decoration:none">選購站連結 📋</a>
 </div>
 <div id="bar" class="bar g">記帳器載入中…</div>
+<div id="nextStep" style="background:#FFF8E1;border-left:4px solid #FF9900;padding:10px 14px;font-size:13px;line-height:1.6;display:none"></div>
 <div class="actions">
   <button class="scan-btn" id="scanBtn" onclick="scanNow()">🔍 立即掃描新照片</button>
   <button class="upload-btn" onclick="uploadModal()">🏠 回家：上傳 Shop2000</button>
@@ -194,9 +195,31 @@ async function load() {
     _products = d.products.rows || [];
     renderProducts(d.products);
     renderOrders(d.orders);
+    updateNextStep(d);
   } catch(e) {
     document.getElementById('bar').textContent = '載入失敗: '+e;
   }
+}
+
+function updateNextStep(d) {
+  const el = document.getElementById('nextStep');
+  const prods = (d.products.rows || []).length;
+  const orders = (d.orders.orders || []).length;
+  const picked = (d.orders.orders || []).filter(o => o.picked > 0).length;
+  const steps = [
+    { done: prods > 0,   icon:'📸', label:'掃描照片',    hint: prods > 0 ? `已辨識 ${prods} 件商品` : '把照片丟進 Drive 子資料夾，再按「🔍 立即掃描」' },
+    { done: orders > 0,  icon:'✏️', label:'校對 + 傳連結', hint: orders > 0 ? `已收到 ${orders} 筆訂單` : '校對商品名/價格後，按頂部「選購站連結 📋」複製傳給客戶' },
+    { done: picked > 0,  icon:'🛒', label:'現場採購 + 勾單', hint: picked > 0 ? `已勾 ${picked} 筆` : '在「訂單（勾買到）」分頁，輸入買到件數後按「勾」' },
+    { done: false,       icon:'🏠', label:'回家上傳',     hint: '按「🏠 回家：上傳 Shop2000」完成最後一步' }
+  ];
+  const cur = steps.findIndex(s => !s.done);
+  const active = cur === -1 ? steps.length - 1 : cur;
+  const s = steps[active];
+  const progress = steps.map((st, i) =>
+    `<span style="opacity:${i===active?1:i<active?0.5:0.3};font-weight:${i===active?700:400}">${st.icon}${i<active?'<s>'+st.label+'</s>':st.label}</span>`
+  ).join(' <span style="color:#ccc">›</span> ');
+  el.style.display = '';
+  el.innerHTML = `<div style="margin-bottom:4px">${progress}</div><div style="color:#555">👉 <b>下一步：</b>${s.hint}</div>`;
 }
 
 function renderBudget(r) {
