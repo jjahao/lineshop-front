@@ -206,20 +206,36 @@ function updateNextStep(d) {
   const prods = (d.products.rows || []).length;
   const orders = (d.orders.orders || []).length;
   const picked = (d.orders.orders || []).filter(o => o.picked > 0).length;
-  const steps = [
-    { done: prods > 0,   icon:'📸', label:'掃描照片',    hint: prods > 0 ? `已辨識 ${prods} 件商品` : '把照片丟進 Drive 子資料夾，再按「🔍 立即掃描」' },
-    { done: orders > 0,  icon:'✏️', label:'校對 + 傳連結', hint: orders > 0 ? `已收到 ${orders} 筆訂單` : '校對商品名/價格後，按頂部「選購站連結 📋」複製傳給客戶' },
-    { done: picked > 0,  icon:'🛒', label:'現場採購 + 勾單', hint: picked > 0 ? `已勾 ${picked} 筆` : '在「訂單（勾買到）」分頁，輸入買到件數後按「勾」' },
-    { done: false,       icon:'🏠', label:'回家上傳',     hint: '按「🏠 回家：上傳 Shop2000」完成最後一步' }
-  ];
-  const cur = steps.findIndex(s => !s.done);
-  const active = cur === -1 ? steps.length - 1 : cur;
-  const s = steps[active];
-  const progress = steps.map((st, i) =>
-    `<span style="opacity:${i===active?1:i<active?0.5:0.3};font-weight:${i===active?700:400}">${st.icon}${i<active?'<s>'+st.label+'</s>':st.label}</span>`
-  ).join(' <span style="color:#ccc">›</span> ');
+
+  let bg, stepNum, title, desc, btnHtml;
+
+  if (prods === 0) {
+    bg='#E3F2FD'; stepNum='步驟 1／4'; title='📸 掃描照片';
+    desc='拍完照已丟進 Drive 資料夾？按下方藍色「🔍 立即掃描新照片」，AI 自動辨識商品名稱和價格。';
+    btnHtml='';
+  } else if (orders === 0) {
+    bg='#FFF8E1'; stepNum='步驟 2／4'; title='✏️ 校對商品，傳連結給客戶';
+    desc='請逐件確認商品名稱、中文翻譯、日幣價格正確，按「存」。<br>完成後點右上「選購站連結 📋」複製，傳給要買的客戶。';
+    btnHtml=`<button onclick="document.getElementById('shopperLink').click()" style="margin-top:10px;width:100%;padding:12px;background:#FF9900;color:#fff;border:0;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">📋 複製選購站連結，傳給客戶</button>`;
+  } else if (picked === 0) {
+    bg='#E8F5E9'; stepNum='步驟 3／4'; title='🛒 去現場採購，買到後勾選';
+    desc=`已收到 ${orders} 筆訂單！去店裡把客戶要的商品買起來，買到後點上方「訂單（勾買到）」分頁，填數量按「勾」。`;
+    btnHtml=`<button onclick="show('o')" style="margin-top:10px;width:100%;padding:12px;background:#2e7d32;color:#fff;border:0;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">🛒 切到訂單分頁，開始勾選</button>`;
+  } else {
+    bg='#F3E5F5'; stepNum='步驟 4／4'; title='🏠 回家後上傳到 Shop2000';
+    desc=`已勾 ${picked} 筆，採購完成！回到家後按下方橘色「🏠 回家：上傳 Shop2000」，依序完成兩段上傳即可。`;
+    btnHtml='';
+  }
+
   el.style.display = '';
-  el.innerHTML = `<div style="margin-bottom:4px">${progress}</div><div style="color:#555">👉 <b>下一步：</b>${s.hint}</div>`;
+  el.style.background = bg;
+  el.style.borderLeft = '4px solid #FF9900';
+  el.style.padding = '12px 14px';
+  el.innerHTML = `
+    <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${stepNum}</div>
+    <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:6px">${title}</div>
+    <div style="font-size:13px;color:#444;line-height:1.6">${desc}</div>
+    ${btnHtml}`;
 }
 
 function renderBudget(r) {

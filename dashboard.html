@@ -28,6 +28,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .empty p{font-size:14px;margin-bottom:8px}
 .spin{display:block;width:28px;height:28px;border:3px solid #eee;border-top-color:#FF9900;border-radius:50%;animation:sp .8s linear infinite;margin:40px auto}
 @keyframes sp{to{transform:rotate(360deg)}}
+/* 批次卡片動作列 */
+.batch{flex-direction:column;align-items:stretch;gap:8px}
+.batch-top{display:flex;gap:12px;align-items:center}
+.action-bar{display:flex;gap:8px}
+.action-bar .act{flex:1;padding:11px 8px;border:0;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3}
+.act.scan{background:#1976d2;color:#fff}
+.act.go{background:#FF9900;color:#fff}
+.act.order{background:#2e7d32;color:#fff}
+.act.upload{background:#6a1b9a;color:#fff}
+.act.done{background:#eee;color:#888;cursor:default}
+.act:active{opacity:.8}
 /* 開新團 modal */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}
 .overlay.on{display:flex}
@@ -127,26 +138,41 @@ async function loadBatches() {
   }
 }
 
-function nextStepHint(b) {
-  if (b.status.startsWith('✅')) return '已上傳完成';
-  if (b.products === 0) return '👉 丟照片進 Drive，再按 🔍 掃描';
-  if (b.orders === 0)  return '👉 校對商品後，複製選購站連結傳給客戶';
-  if (b.picked === 0)  return '👉 現場買到後，進入揀貨單勾買到件數';
-  return '👉 採購完成！進揀貨單按「🏠 回家上傳」';
-}
-
 function batchCard(b) {
-  const icon = b.status.charAt(0) === '✅' ? '📦' : b.status.charAt(0) === '🛍' ? '🛍️' : b.status.charAt(0) === '🛒' ? '🛒' : b.status.charAt(0) === '✏' ? '✏️' : '📸';
-  const isDone = b.status.startsWith('✅');
-  const scanHtml = isDone ? '' : `<button class="scan-btn" onclick="event.stopPropagation();scanBatch('${esc(b.batch)}',this)">🔍 掃描</button>`;
-  return `<div class="batch" onclick="goToBatch('${esc(b.batch)}')">
-    <div class="batch-icon">${icon}</div>
-    <div class="batch-info">
-      <div class="batch-name">${esc(b.batch)}</div>
-      <div class="batch-meta">${b.products} 商品 · ${b.orders} 訂單 · ${b.picked} 已勾 ${scanHtml}</div>
-      <div style="font-size:11px;color:#FF9900;margin-top:4px;font-weight:600">${nextStepHint(b)}</div>
+  const icon = b.status.startsWith('✅') ? '📦' : b.status.startsWith('🛍') ? '🛍️' : b.status.startsWith('🛒') ? '🛒' : b.status.startsWith('✏') ? '✏️' : '📸';
+  const nm = esc(b.batch);
+
+  let actionHtml;
+  if (b.status.startsWith('✅')) {
+    actionHtml = `<div class="action-bar"><button class="act done" disabled>✅ 已上傳完成</button></div>`;
+  } else if (b.products === 0) {
+    actionHtml = `<div class="action-bar">
+      <button class="act scan" id="sb_${nm}" onclick="event.stopPropagation();scanBatch('${nm}',this)">步驟1：🔍 掃描照片（AI辨識）</button>
+    </div>`;
+  } else if (b.orders === 0) {
+    actionHtml = `<div class="action-bar">
+      <button class="act scan" id="sb_${nm}" onclick="event.stopPropagation();scanBatch('${nm}',this)">🔍 再掃</button>
+      <button class="act go" onclick="event.stopPropagation();goToBatch('${nm}')">步驟2：校對商品 → 傳連結給客戶 ▶</button>
+    </div>`;
+  } else if (b.picked === 0) {
+    actionHtml = `<div class="action-bar">
+      <button class="act order" onclick="event.stopPropagation();goToBatch('${nm}')">步驟3：查看訂單 → 現場買到後勾選 ▶</button>
+    </div>`;
+  } else {
+    actionHtml = `<div class="action-bar">
+      <button class="act upload" onclick="event.stopPropagation();goToBatch('${nm}')">步驟4：🏠 回家上傳到 Shop2000 ▶</button>
+    </div>`;
+  }
+
+  return `<div class="batch">
+    <div class="batch-top">
+      <div class="batch-icon">${icon}</div>
+      <div class="batch-info">
+        <div class="batch-name">${nm}</div>
+        <div class="batch-meta">${b.products} 商品 · ${b.orders} 訂單 · ${b.picked} 已勾</div>
+      </div>
     </div>
-    <div class="batch-status">${b.status}</div>
+    ${actionHtml}
   </div>`;
 }
 
