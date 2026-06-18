@@ -14,7 +14,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .new-btn:active{transform:scale(.97)}
 .section{padding:0 16px}
 .section h2{font-size:15px;font-weight:700;color:#555;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid #e0e0e0}
-.batch{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.07);cursor:pointer;display:flex;gap:12px;align-items:center}
+.batch{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.07);cursor:pointer;display:flex;flex-direction:column;gap:8px}
 .batch:active{background:#f0f0f0}
 .batch-icon{font-size:28px;flex-shrink:0}
 .batch-info{flex:1;min-width:0}
@@ -29,7 +29,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .spin{display:block;width:28px;height:28px;border:3px solid #eee;border-top-color:#FF9900;border-radius:50%;animation:sp .8s linear infinite;margin:40px auto}
 @keyframes sp{to{transform:rotate(360deg)}}
 /* 批次卡片動作列 */
-.batch{flex-direction:column;align-items:stretch;gap:8px}
 .batch-top{display:flex;gap:12px;align-items:center}
 .action-bar{display:flex;gap:8px}
 .action-bar .act{flex:1;padding:11px 8px;border:0;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3}
