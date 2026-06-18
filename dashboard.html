@@ -152,7 +152,7 @@ function batchCard(b) {
   } else if (b.orders === 0) {
     actionHtml = `<div class="action-bar">
       <button class="act scan" id="sb_${nm}" onclick="event.stopPropagation();scanBatch('${nm}',this)">🔍 再掃</button>
-      <button class="act go" onclick="event.stopPropagation();goToBatch('${nm}')">步驟2：校對商品 → 傳連結給客戶 ▶</button>
+      <button class="act go" onclick="event.stopPropagation();goToBatch('${nm}')">步驟2：傳選購站連結給客戶 ▶</button>
     </div>`;
   } else if (b.picked === 0) {
     actionHtml = `<div class="action-bar">

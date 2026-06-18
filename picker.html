@@ -94,7 +94,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 </div>
 
 <div class="tab">
-  <button id="tabP" class="on" onclick="show('p')">商品（校對）</button>
+  <button id="tabP" class="on" onclick="show('p')">商品（改價）</button>
   <button id="tabO" onclick="show('o')">訂單（勾買到）</button>
 </div>
 <div id="panP" class="list"><div class="spin"></div></div>
@@ -214,8 +214,8 @@ function updateNextStep(d) {
     desc='拍完照已丟進 Drive 資料夾？按下方藍色「🔍 立即掃描新照片」，AI 自動辨識商品名稱和價格。';
     btnHtml='';
   } else if (orders === 0) {
-    bg='#FFF8E1'; stepNum='步驟 2／4'; title='✏️ 校對商品，傳連結給客戶';
-    desc='請逐件確認商品名稱、中文翻譯、日幣價格正確，按「存」。<br>完成後點右上「選購站連結 📋」複製，傳給要買的客戶。';
+    bg='#FFF8E1'; stepNum='步驟 2／4'; title='📋 傳選購站連結給客戶';
+    desc=`已辨識 ${prods} 件商品，直接傳連結給客戶下單。如有商品價格有誤，在下方清單直接改。`;
     btnHtml=`<button onclick="document.getElementById('shopperLink').click()" style="margin-top:10px;width:100%;padding:12px;background:#FF9900;color:#fff;border:0;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">📋 複製選購站連結，傳給客戶</button>`;
   } else if (picked === 0) {
     bg='#E8F5E9'; stepNum='步驟 3／4'; title='🛒 去現場採購，買到後勾選';
