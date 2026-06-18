@@ -168,7 +168,7 @@ function closeCart() { document.getElementById('drawer').classList.remove('open'
 function rcart() {
   let tot=0, html='';
   CART.forEach((q,id) => {
-    const p = PRODS.find(x=>x.photo_id===id); if(!p) return;
+    const p = PRODS.find(x=>String(x.photo_id)===String(id)); if(!p) return;
     const sub = q*Number(p.price_twd); tot += sub;
     html += `<div class="drow">
       <img src="${esc(p.image)}" onerror="this.style.background='#eee'">
@@ -209,7 +209,7 @@ async function submitOrder() {
       + '&note=' + encodeURIComponent(document.getElementById('note').value||'');
     const r = await fetch(url).then(x=>x.json());
     if (!r.ok) throw new Error(r.error||'失敗');
-    let s = items.map(it=>{ const p=PRODS.find(x=>x.photo_id===it.photo_id); return p?`<div style="padding:5px 0;border-bottom:1px solid #eee;font-size:13px;text-align:left">${esc(p.name)} × ${it.qty}</div>`:''; }).join('');
+    let s = items.map(it=>{ const p=PRODS.find(x=>String(x.photo_id)===String(it.photo_id)); return p?`<div style="padding:5px 0;border-bottom:1px solid #eee;font-size:13px;text-align:left">${esc(p.name)} × ${it.qty}</div>`:''; }).join('');
     document.body.insertAdjacentHTML('beforeend',`<div class="done"><div class="box"><h3>✅ 訂單送出！</h3>${s}<p style="margin-top:10px">買手會盡力採購，有缺貨即時通知。</p><button class="dsubmit" onclick="location.reload()" style="margin-top:12px">繼續選購</button></div></div>`);
   } catch(e) { btn.disabled=false; btn.textContent='確認下單'; toast('送出失敗: '+e); }
 }
