@@ -307,14 +307,30 @@ async function pickIt(ts, email, pid, wantQty) {
 
 async function scanNow() {
   const btn = document.getElementById('scanBtn');
-  btn.disabled = true; btn.textContent = '🔍 掃描中… (每張約 3-5 秒)';
+  btn.disabled = true; btn.textContent = '啟動中...';
   try {
     const r = await fetch(api('scan')).then(x=>x.json());
-    const ok = (r.results||[]).filter(x=>x.ok).length;
-    const fail = (r.results||[]).filter(x=>!x.ok).length;
-    btn.textContent = '✅ 完成: +'+ok+' 張'+(fail?' / 失敗 '+fail:'');
-    load();
-    setTimeout(()=>{ btn.disabled=false; btn.textContent='🔍 立即掃描新照片'; }, 3000);
+    if (r.status === 'done') {
+      btn.textContent = '✅ 全部已掃';
+      load();
+      setTimeout(()=>{ btn.disabled=false; btn.textContent='🔍 立即掃描新照片'; }, 2000);
+      return;
+    }
+    btn.textContent = '⏳ 掃描 '+r.pending+' 張...';
+    const poll = setInterval(async () => {
+      try {
+        const s = await fetch(api('scan_status')).then(x=>x.json());
+        if (s.status === 'done') {
+          clearInterval(poll);
+          btn.textContent = '✅ +'+s.done+' 張完成';
+          load();
+          setTimeout(()=>{ btn.disabled=false; btn.textContent='🔍 立即掃描新照片'; }, 3000);
+        } else {
+          btn.textContent = '⏳ 已掃 '+s.done+'/'+(s.done+s.pending)+'...';
+        }
+      } catch(_) {}
+    }, 5000);
+    setTimeout(()=>clearInterval(poll), 600000);
   } catch(e) {
     btn.textContent = '❌ '+e;
     setTimeout(()=>{ btn.disabled=false; btn.textContent='🔍 立即掃描新照片'; }, 3000);
