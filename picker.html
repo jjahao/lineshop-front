@@ -437,7 +437,10 @@ async function uploadModal() {
     const d = await fetch(api('picker_data')).then(x => x.json());
     _prodCount  = (d.products?.rows || []).length;
     _orderCount = (d.orders?.orders || []).filter(o => o.picked > 0).length;
-    document.getElementById('s1info').textContent = `共 ${_prodCount} 件商品，建立 Shop2000 商品分類「代購連線_${BATCH}」並上傳 XLS。`;
+    const catName = '代購連線_' + BATCH;
+    document.getElementById('s1info').innerHTML =
+      `📁 主分類目錄：<b style="color:#c62828;font-size:15px">${esc(catName)}</b><br>` +
+      `共 ${_prodCount} 件商品上傳至此分類`;
     document.getElementById('s2info').textContent = `共 ${_orderCount} 筆已確認訂單，匯入到 xls_add_order.aspx。`;
     const s1btn = document.getElementById('s1btn');
     s1btn.className = 'stage-btn go';
