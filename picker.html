@@ -184,7 +184,20 @@ function show(t) {
   document.getElementById('panO').style.display = t==='o'?'':'none';
 }
 
-let _products = []; // keep for recalc
+let _products = [];
+const CACHE_KEY = 'picker_cache_' + BATCH;
+
+function applyData(d, fromCache) {
+  renderBudget(d.budget);
+  _products = d.products.rows || [];
+  renderProducts(d.products);
+  renderOrders(d.orders);
+  updateNextStep(d);
+  if (!fromCache) {
+    if (TAB === 'o') show('o');
+    else if (TAB === 'upload') { show('p'); uploadModal(); }
+  }
+}
 
 async function load() {
   loadCfg();
@@ -194,18 +207,22 @@ async function load() {
   const shopLink = document.getElementById('shopperLink');
   shopLink.href = shopUrl;
   shopLink.onclick = function(e) { e.preventDefault(); navigator.clipboard.writeText(shopUrl).then(()=>alert('已複製選購站連結！\n' + shopUrl)).catch(()=>window.open(shopUrl)); };
+
+  // 快取先渲染（感覺秒開）
+  let hadCache = false;
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+    if (cached) { applyData(cached, true); hadCache = true; }
+  } catch(_) {}
+
+  // 背景拉新資料
   try {
     const d = await fetch(api('picker_data')).then(x=>x.json());
-    if (d.ok===false) { alert('Token 錯誤: '+d.error); return; }
-    renderBudget(d.budget);
-    _products = d.products.rows || [];
-    renderProducts(d.products);
-    renderOrders(d.orders);
-    updateNextStep(d);
-    if (TAB === 'o') show('o');
-    else if (TAB === 'upload') { show('p'); uploadModal(); }
+    if (d.ok===false) { document.getElementById('bar').textContent = 'Token 錯誤: '+d.error; return; }
+    localStorage.setItem(CACHE_KEY, JSON.stringify(d));
+    applyData(d, false);
   } catch(e) {
-    document.getElementById('bar').textContent = '載入失敗: '+e;
+    if (!hadCache) document.getElementById('bar').textContent = '載入失敗: '+e;
   }
 }
 
