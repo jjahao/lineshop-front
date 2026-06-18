@@ -335,7 +335,7 @@ function renderOrders(r) {
           <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span>${isDone?` <button style="font-size:10px;padding:2px 6px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;color:#666" onclick="unlockItem('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',this)">解鎖</button>`:''}</div>
         </div>
         <div class="item-bottom">
-          <img src="${esc(o.product.image||'')}" onerror="this.style.display='none'">
+          <img src="${esc(o.product.image||'')}" onerror="this.style.background='#e8e8e8'" style="min-height:80px">
           <div class="item-right">
             <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" ${isDone?'disabled':''} id="pk_${tsafe}_${o.photo_id}">
             <button class="pick-btn" ${isDone?'disabled style="background:#aaa"':''} onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty},this.previousElementSibling)">✓ 勾選</button>
