@@ -148,7 +148,7 @@ function closeNewModal() {
 }
 
 document.getElementById('newName').addEventListener('keydown', e => {
-  if (e.key === 'Enter') createBatch();
+  if (e.key === 'Enter' && !e.isComposing) createBatch();
 });
 
 async function createBatch() {
