@@ -307,7 +307,7 @@ function renderOrders(r) {
           <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span style="color:${sc};font-weight:700">${stat}</span></div>
         </div>
         <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" id="pk_${tsafe}_${o.photo_id}">
-        <button class="pick-btn" onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty})">勾</button>
+        <button class="pick-btn" onclick="pickIt('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',${o.qty},this.previousElementSibling)">勾</button>
       </div>`;
     });
     html += '</div>';
@@ -334,9 +334,9 @@ async function saveP(pid) {
   } catch(e) { alert('失敗: '+e); }
 }
 
-async function pickIt(ts, email, pid, wantQty) {
-  const tsafe = String(ts).replace(/[^0-9]/g,'');
-  const inp = document.getElementById('pk_'+tsafe+'_'+pid);
+async function pickIt(ts, email, pid, wantQty, inpEl) {
+  const inp = inpEl || document.getElementById('pk_'+String(ts).replace(/[^0-9]/g,'')+'_'+pid);
+  if (!inp) { alert('找不到數量格，請重新整理頁面'); return; }
   const pk = Number(inp.value);
   const status = pk===0?'缺貨':pk>=wantQty?'買到':'部分';
   try {
