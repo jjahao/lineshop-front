@@ -331,7 +331,7 @@ function renderOrders(r) {
         <div class="item-top">
           <div class="item-name">${jpName||zhName||'(無)'}</div>
           ${zhName&&jpName?`<div class="item-name-zh">${zhName}</div>`:''}
-          <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span>${isDone?` <button style="font-size:10px;padding:2px 6px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;color:#666" onclick="unlockItem('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}')">解鎖</button>`:''}</div>
+          <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span>${isDone?` <button style="font-size:10px;padding:2px 6px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;color:#666" onclick="unlockItem('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',this)">解鎖</button>`:''}</div>
         </div>
         <div class="item-bottom">
           <img src="${esc(o.product.image||'')}" onerror="this.style.background='#eee'">
@@ -511,13 +511,32 @@ function applyStatus(r) {
   }
 }
 
-async function unlockItem(ts, email, pid) {
-  // Reset picked status to 待處理 by marking with status='' and qty=0
+async function unlockItem(ts, email, pid, unlockBtn) {
+  unlockBtn.disabled = true; unlockBtn.textContent = '⏳';
   try {
     const r = await fetch(api('mark_picked','&ts='+encodeURIComponent(ts)+'&email='+encodeURIComponent(email)+'&pid='+encodeURIComponent(pid)+'&qty=0&status=%E5%BE%85%E8%99%95%E7%90%86')).then(x=>x.json());
-    if (r.ok) { load(); }
-    else { alert('解鎖失敗: '+r.error); }
-  } catch(e) { alert('解鎖失敗: '+e); }
+    if (r.ok) {
+      // 原地更新：恢復輸入框 + 勾按鈕，移除解鎖按鈕，更新狀態文字
+      const tsafe = String(ts).replace(/[^0-9]/g,'');
+      const inp = document.getElementById('pk_'+tsafe+'_'+pid);
+      if (inp) { inp.disabled = false; inp.value = 0; }
+      const pickBtn = inp?.nextElementSibling;
+      if (pickBtn) { pickBtn.disabled = false; pickBtn.textContent = '勾'; pickBtn.style.background = ''; }
+      const statEl = document.querySelector('.stat-'+tsafe+'_'+pid);
+      if (statEl) {
+        statEl.textContent = '待處理';
+        statEl.style.color = '#666';
+        // 移除解鎖按鈕
+        unlockBtn.remove();
+      }
+    } else {
+      unlockBtn.disabled = false; unlockBtn.textContent = '解鎖';
+      alert('解鎖失敗: '+r.error);
+    }
+  } catch(e) {
+    unlockBtn.disabled = false; unlockBtn.textContent = '解鎖';
+    alert('解鎖失敗: '+e);
+  }
 }
 
 load();
