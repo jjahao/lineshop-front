@@ -21,6 +21,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 .batch-name{font-size:15px;font-weight:700}
 .batch-meta{font-size:12px;color:#888;margin-top:3px}
 .batch-status{font-size:13px;font-weight:600;flex-shrink:0}
+.scan-btn{display:inline-block;padding:4px 10px;background:#1976d2;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px}
+.scan-btn:active{opacity:.7}
+.scan-btn:disabled{background:#aaa}
 .empty{text-align:center;padding:40px 20px;color:#999}
 .empty p{font-size:14px;margin-bottom:8px}
 .spin{display:block;width:28px;height:28px;border:3px solid #eee;border-top-color:#FF9900;border-radius:50%;animation:sp .8s linear infinite;margin:40px auto}
@@ -126,11 +129,13 @@ async function loadBatches() {
 
 function batchCard(b) {
   const icon = b.status.charAt(0) === '✅' ? '📦' : b.status.charAt(0) === '🛍' ? '🛍️' : b.status.charAt(0) === '🛒' ? '🛒' : b.status.charAt(0) === '✏' ? '✏️' : '📸';
+  const isDone = b.status.startsWith('✅');
+  const scanHtml = isDone ? '' : `<button class="scan-btn" onclick="event.stopPropagation();scanBatch('${esc(b.batch)}',this)">🔍 掃描</button>`;
   return `<div class="batch" onclick="goToBatch('${esc(b.batch)}')">
     <div class="batch-icon">${icon}</div>
     <div class="batch-info">
       <div class="batch-name">${esc(b.batch)}</div>
-      <div class="batch-meta">${b.products} 商品 · ${b.orders} 訂單 · ${b.picked} 已勾</div>
+      <div class="batch-meta">${b.products} 商品 · ${b.orders} 訂單 · ${b.picked} 已勾 ${scanHtml}</div>
     </div>
     <div class="batch-status">${b.status}</div>
   </div>`;
@@ -167,6 +172,18 @@ async function createBatch() {
   } catch(e) {
     alert('失敗: ' + e);
     btn.disabled = false; btn.textContent = '開團';
+  }
+}
+
+async function scanBatch(name, btn) {
+  btn.disabled = true; btn.textContent = '掃描中...';
+  try {
+    const r = await fetch(api('scan', '&batch=' + encodeURIComponent(name))).then(x => x.json());
+    btn.textContent = '✅ ' + (r.processed || 0) + ' 張';
+    setTimeout(() => { loadBatches(); }, 1500);
+  } catch(e) {
+    btn.textContent = '❌ 失敗';
+    setTimeout(() => { btn.disabled = false; btn.textContent = '🔍 掃描'; }, 2000);
   }
 }
 
