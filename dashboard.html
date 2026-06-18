@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>代購連線 — 控制台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;background:#f5f5f7;color:#0F1111}
+.header{background:#232F3E;color:#fff;padding:16px;text-align:center}
+.header h1{font-size:20px;font-weight:700}
+.header p{font-size:12px;color:#aaa;margin-top:4px}
+.new-btn{display:block;margin:16px;padding:16px;background:#FF9900;color:#fff;border:0;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;text-align:center;box-shadow:0 2px 8px rgba(255,153,0,.3)}
+.new-btn:active{transform:scale(.97)}
+.section{padding:0 16px}
+.section h2{font-size:15px;font-weight:700;color:#555;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid #e0e0e0}
+.batch{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.07);cursor:pointer;display:flex;gap:12px;align-items:center}
+.batch:active{background:#f0f0f0}
+.batch-icon{font-size:28px;flex-shrink:0}
+.batch-info{flex:1;min-width:0}
+.batch-name{font-size:15px;font-weight:700}
+.batch-meta{font-size:12px;color:#888;margin-top:3px}
+.batch-status{font-size:13px;font-weight:600;flex-shrink:0}
+.empty{text-align:center;padding:40px 20px;color:#999}
+.empty p{font-size:14px;margin-bottom:8px}
+.spin{display:block;width:28px;height:28px;border:3px solid #eee;border-top-color:#FF9900;border-radius:50%;animation:sp .8s linear infinite;margin:40px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* 開新團 modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}
+.overlay.on{display:flex}
+.modal{background:#fff;border-radius:16px;padding:24px;width:calc(100% - 40px);max-width:380px}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:16px}
+.modal input{width:100%;padding:12px;border:1px solid #D5D9D9;border-radius:8px;font-size:15px;margin-bottom:12px}
+.modal .go{width:100%;padding:12px;background:#FF9900;color:#fff;border:0;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer}
+.modal .go:disabled{background:#ccc}
+.modal .cancel{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;background:#fff;font-size:14px;cursor:pointer;margin-top:8px}
+/* 引導步驟 */
+.guide{background:#fff;border-radius:12px;padding:16px;margin:16px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.guide h3{font-size:15px;font-weight:700;margin-bottom:12px;color:#232F3E}
+.step{display:flex;gap:10px;padding:8px 0;align-items:flex-start}
+.step-num{width:24px;height:24px;border-radius:50%;background:#FF9900;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-text{font-size:13px;line-height:1.5;color:#333}
+.step-text b{color:#0F1111}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🛍️ 代購連線</h1>
+  <p>選擇一個團開始作業，或開新團</p>
+</div>
+
+<button class="new-btn" onclick="showNewModal()">＋ 開新團</button>
+
+<div class="section">
+  <h2>進行中的團</h2>
+  <div id="activeList"><div class="spin"></div></div>
+</div>
+
+<div class="section">
+  <h2>已完成</h2>
+  <div id="doneList"><div class="empty"><p>還沒有已完成的團</p></div></div>
+</div>
+
+<div class="guide">
+  <h3>📋 買手操作流程</h3>
+  <div class="step"><div class="step-num">1</div><div class="step-text"><b>開新團</b> — 輸入團名（如「好市多_0618」）</div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-text"><b>拍照</b> — 把商品照片丟進 Google Drive 資料夾</div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-text"><b>掃描</b> — 按「🔍 立即掃描」，AI 自動辨識商品名+價格+翻譯</div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-text"><b>校對</b> — 確認日文名、中文翻譯、日幣價格，按存</div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-text"><b>傳選購站連結給客戶</b> — 客戶自己選購下單</div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-text"><b>勾買到</b> — 在訂單頁勾選已買到的商品</div></div>
+  <div class="step"><div class="step-num">7</div><div class="step-text"><b>回家上傳</b> — 按「🏠 回家」上架到 Shop2000</div></div>
+</div>
+
+<!-- 開新團 modal -->
+<div class="overlay" id="newOverlay">
+  <div class="modal">
+    <h3>🆕 開新團</h3>
+    <input id="newName" placeholder="團名（如：好市多_0618）" autofocus>
+    <button class="go" id="newGoBtn" onclick="createBatch()">開團</button>
+    <button class="cancel" onclick="closeNewModal()">取消</button>
+  </div>
+</div>
+
+<script>
+const GAS = 'https://silent-unit-718clineshop-proxy.jjahao.workers.dev';
+const TOKEN = new URLSearchParams(location.search).get('token') || 'lineshop2026';
+
+function api(view, extra) {
+  return GAS + '?view=' + view + '&token=' + encodeURIComponent(TOKEN) + (extra||'');
+}
+
+function goToBatch(name) {
+  location.href = 'picker.html?batch=' + encodeURIComponent(name) + '&token=' + encodeURIComponent(TOKEN);
+}
+
+function shopperUrl(name) {
+  return location.origin + '/index.html?batch=' + encodeURIComponent(name);
+}
+
+async function loadBatches() {
+  try {
+    const d = await fetch(api('list_batches')).then(x => x.json());
+    const batches = d.batches || [];
+    const active = batches.filter(b => b.status !== '✅ 已上傳');
+    const done = batches.filter(b => b.status === '✅ 已上傳');
+
+    const activeEl = document.getElementById('activeList');
+    const doneEl = document.getElementById('doneList');
+
+    if (!active.length) {
+      activeEl.innerHTML = '<div class="empty"><p>目前沒有進行中的團</p><p style="font-size:12px">按上方「＋ 開新團」開始</p></div>';
+    } else {
+      activeEl.innerHTML = active.map(b => batchCard(b)).join('');
+    }
+
+    if (!done.length) {
+      doneEl.innerHTML = '<div class="empty"><p>還沒有已完成的團</p></div>';
+    } else {
+      doneEl.innerHTML = done.map(b => batchCard(b)).join('');
+    }
+  } catch(e) {
+    document.getElementById('activeList').innerHTML = '<div class="empty"><p>載入失敗: '+e+'</p></div>';
+  }
+}
+
+function batchCard(b) {
+  const icon = b.status.charAt(0) === '✅' ? '📦' : b.status.charAt(0) === '🛍' ? '🛍️' : b.status.charAt(0) === '🛒' ? '🛒' : b.status.charAt(0) === '✏' ? '✏️' : '📸';
+  return `<div class="batch" onclick="goToBatch('${esc(b.batch)}')">
+    <div class="batch-icon">${icon}</div>
+    <div class="batch-info">
+      <div class="batch-name">${esc(b.batch)}</div>
+      <div class="batch-meta">${b.products} 商品 · ${b.orders} 訂單 · ${b.picked} 已勾</div>
+    </div>
+    <div class="batch-status">${b.status}</div>
+  </div>`;
+}
+
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]))}
+
+function showNewModal() {
+  document.getElementById('newOverlay').classList.add('on');
+  document.getElementById('newName').value = '';
+  document.getElementById('newName').focus();
+}
+function closeNewModal() {
+  document.getElementById('newOverlay').classList.remove('on');
+}
+
+document.getElementById('newName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') createBatch();
+});
+
+async function createBatch() {
+  const name = document.getElementById('newName').value.trim();
+  if (!name) { alert('請輸入團名'); return; }
+  const btn = document.getElementById('newGoBtn');
+  btn.disabled = true; btn.textContent = '建立中...';
+  try {
+    const r = await fetch(api('create_batch', '&name=' + encodeURIComponent(name))).then(x => x.json());
+    if (r.ok) {
+      goToBatch(name);
+    } else {
+      alert('失敗: ' + (r.error || '未知錯誤'));
+      btn.disabled = false; btn.textContent = '開團';
+    }
+  } catch(e) {
+    alert('失敗: ' + e);
+    btn.disabled = false; btn.textContent = '開團';
+  }
+}
+
+loadBatches();
+</script>
+</body>
+</html>

@@ -62,6 +62,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 </style>
 </head>
 <body>
+<div style="background:#232F3E;padding:10px 14px;display:flex;align-items:center;gap:10px">
+  <a href="dashboard.html" style="color:#FF9900;text-decoration:none;font-size:20px">←</a>
+  <span style="color:#fff;font-weight:700;font-size:15px;flex:1" id="batchTitle"></span>
+  <a id="shopperLink" href="#" target="_blank" style="color:#FF9900;font-size:12px;text-decoration:none">選購站連結 📋</a>
+</div>
 <div id="bar" class="bar g">記帳器載入中…</div>
 <div class="actions">
   <button class="scan-btn" id="scanBtn" onclick="scanNow()">🔍 立即掃描新照片</button>
@@ -118,8 +123,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif;backg
 <script>
 const GAS = 'https://silent-unit-718clineshop-proxy.jjahao.workers.dev';
 const params = new URLSearchParams(location.search);
-const BATCH = params.get('batch') || '好市多';
+const BATCH = params.get('batch') || '';
 const TOKEN = params.get('token') || 'lineshop2026';
+if (!BATCH) { location.href = 'dashboard.html?token=' + encodeURIComponent(TOKEN); }
 
 function api(view, extra) {
   return GAS + '?view=' + view + '&batch=' + encodeURIComponent(BATCH) + '&token=' + encodeURIComponent(TOKEN) + (extra||'');
@@ -176,6 +182,11 @@ let _products = []; // keep for recalc
 
 async function load() {
   loadCfg();
+  document.getElementById('batchTitle').textContent = BATCH;
+  const shopUrl = location.origin + '/index.html?batch=' + encodeURIComponent(BATCH);
+  const shopLink = document.getElementById('shopperLink');
+  shopLink.href = shopUrl;
+  shopLink.onclick = function(e) { e.preventDefault(); navigator.clipboard.writeText(shopUrl).then(()=>alert('已複製選購站連結！\n' + shopUrl)).catch(()=>window.open(shopUrl)); };
   try {
     const d = await fetch(api('picker_data')).then(x=>x.json());
     if (d.ok===false) { alert('Token 錯誤: '+d.error); return; }
