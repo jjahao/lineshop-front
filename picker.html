@@ -129,6 +129,7 @@ const GAS = 'https://silent-unit-718clineshop-proxy.jjahao.workers.dev';
 const params = new URLSearchParams(location.search);
 const BATCH = params.get('batch') || '';
 const TOKEN = params.get('token') || 'lineshop2026';
+const TAB   = params.get('tab') || 'p';
 if (!BATCH) { location.href = 'dashboard.html?token=' + encodeURIComponent(TOKEN); }
 
 function api(view, extra) {
@@ -201,6 +202,8 @@ async function load() {
     renderProducts(d.products);
     renderOrders(d.orders);
     updateNextStep(d);
+    if (TAB === 'o') show('o');
+    else if (TAB === 'upload') { show('p'); uploadModal(); }
   } catch(e) {
     document.getElementById('bar').textContent = '載入失敗: '+e;
   }

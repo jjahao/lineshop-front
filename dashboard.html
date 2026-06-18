@@ -103,8 +103,17 @@ function api(view, extra) {
   return GAS + '?view=' + view + '&token=' + encodeURIComponent(TOKEN) + (extra||'');
 }
 
-function goToBatch(name) {
-  location.href = 'picker.html?batch=' + encodeURIComponent(name) + '&token=' + encodeURIComponent(TOKEN);
+function goToBatch(name, tab) {
+  let url = 'picker.html?batch=' + encodeURIComponent(name) + '&token=' + encodeURIComponent(TOKEN);
+  if (tab) url += '&tab=' + encodeURIComponent(tab);
+  location.href = url;
+}
+
+function copyLink(name) {
+  const url = shopperUrl(name);
+  navigator.clipboard.writeText(url)
+    .then(() => alert('✅ 已複製選購站連結！\n\n' + url))
+    .catch(() => prompt('請手動複製此連結：', url));
 }
 
 function shopperUrl(name) {
@@ -138,31 +147,38 @@ async function loadBatches() {
   }
 }
 
-function batchCard(b) {
-  const icon = b.status.startsWith('✅') ? '📦' : b.status.startsWith('🛍') ? '🛍️' : b.status.startsWith('🛒') ? '🛒' : b.status.startsWith('✏') ? '✏️' : '📸';
-  const nm = esc(b.batch);
+// state: 'done'=綠, 'now'=橘(當前步驟), 'todo'=灰(未到)
+function stepPill(num, label, state, onclick) {
+  let bg, color, border;
+  if (state === 'done')      { bg='#e8f5e9'; color='#2e7d32'; border='1.5px solid #2e7d32'; }
+  else if (state === 'now')  { bg='#FF9900'; color='#fff';     border='none'; }
+  else                       { bg='#f0f0f0'; color='#aaa';     border='1px solid #ddd'; }
+  const prefix = state === 'done' ? '✓ ' : state === 'now' ? '▶ ' : '';
+  return `<button onclick="event.stopPropagation();${onclick}" style="flex:1;padding:8px 4px;background:${bg};color:${color};border:${border};border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;line-height:1.4;min-height:52px;text-align:center">
+    <span style="display:block;font-size:9px;opacity:.65;font-weight:400;margin-bottom:2px">步驟${num}</span>${prefix}${label}
+  </button>`;
+}
 
-  let actionHtml;
-  if (b.status.startsWith('✅')) {
-    actionHtml = `<div class="action-bar"><button class="act done" disabled>✅ 已上傳完成</button></div>`;
-  } else if (b.products === 0) {
-    actionHtml = `<div class="action-bar">
-      <button class="act scan" id="sb_${nm}" onclick="event.stopPropagation();scanBatch('${nm}',this)">步驟1：🔍 掃描照片（AI辨識）</button>
-    </div>`;
-  } else if (b.orders === 0) {
-    actionHtml = `<div class="action-bar">
-      <button class="act scan" id="sb_${nm}" onclick="event.stopPropagation();scanBatch('${nm}',this)">🔍 再掃</button>
-      <button class="act go" onclick="event.stopPropagation();goToBatch('${nm}')">步驟2：傳選購站連結給客戶 ▶</button>
-    </div>`;
-  } else if (b.picked === 0) {
-    actionHtml = `<div class="action-bar">
-      <button class="act order" onclick="event.stopPropagation();goToBatch('${nm}')">步驟3：查看訂單 → 現場買到後勾選 ▶</button>
-    </div>`;
-  } else {
-    actionHtml = `<div class="action-bar">
-      <button class="act upload" onclick="event.stopPropagation();goToBatch('${nm}')">步驟4：🏠 回家上傳到 Shop2000 ▶</button>
-    </div>`;
-  }
+function batchCard(b) {
+  const nm = esc(b.batch);
+  const hasProd  = b.products > 0;
+  const hasOrder = b.orders > 0;
+  const hasPick  = b.picked > 0;
+  const isDone   = b.status?.startsWith('✅');
+
+  const s1 = hasProd ? 'done' : 'now';
+  const s2 = hasOrder ? 'done' : hasProd ? 'now' : 'todo';
+  const s3 = hasPick  ? 'done' : hasOrder ? 'now' : 'todo';
+  const s4 = isDone   ? 'done' : hasPick  ? 'now' : 'todo';
+
+  const icon = isDone?'📦':hasPick?'🛒':hasOrder?'📋':hasProd?'✏️':'📸';
+
+  const a1 = s1==='done'
+    ? `goToBatch('${nm}','p')`
+    : `scanBatch('${nm}',event.currentTarget)`;
+  const a2 = `copyLink('${nm}')`;
+  const a3 = `goToBatch('${nm}','o')`;
+  const a4 = `goToBatch('${nm}','upload')`;
 
   return `<div class="batch">
     <div class="batch-top">
@@ -172,7 +188,12 @@ function batchCard(b) {
         <div class="batch-meta">${b.products} 商品 · ${b.orders} 訂單 · ${b.picked} 已勾</div>
       </div>
     </div>
-    ${actionHtml}
+    <div style="display:flex;gap:5px;margin-top:2px">
+      ${stepPill(1,'掃描辨識',s1,a1)}
+      ${stepPill(2,'傳選購站',s2,a2)}
+      ${stepPill(3,'採購勾選',s3,a3)}
+      ${stepPill(4,'回家上傳',s4,a4)}
+    </div>
   </div>`;
 }
 
