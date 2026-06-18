@@ -136,6 +136,7 @@ function api(view, extra) {
 }
 function fmt(n){return 'NT$'+Number(n).toLocaleString('zh-Hant')}
 function fmtJpy(n){return '¥'+Number(n).toLocaleString('ja-JP')}
+function fmtTs(ts){try{const d=new Date(ts);return (d.getMonth()+1)+'/'+(d.getDate())+' '+(d.getHours()).toString().padStart(2,'0')+':'+(d.getMinutes()).toString().padStart(2,'0');}catch(_){return String(ts||'')}}
 function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
 // ── 匯率/手續費設定（localStorage 保存） ────────────────────────────────────
@@ -297,7 +298,7 @@ function renderOrders(r) {
     let tot = 0; lst.forEach(o => { if(o.picked>0) tot += o.picked*Number(o.product.price_twd); });
     html += `<div class="order-card">
       <div class="order-email">📧 ${esc(email)}</div>
-      <div class="order-meta">${lst[0].ts} · 已買到合計 ${fmt(tot)}</div>`;
+      <div class="order-meta">${fmtTs(lst[0].ts)} · 已買到合計 ${fmt(tot)}</div>`;
     lst.forEach(o => {
       const pk = o.picked==null ? o.qty : o.picked;
       const stat = o.status||'待處理';
@@ -310,7 +311,7 @@ function renderOrders(r) {
         <div class="item-top">
           <div class="item-name">${jpName||zhName||'(無)'}</div>
           ${zhName&&jpName?`<div class="item-name-zh">${zhName}</div>`:''}
-          <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span></div>
+          <div class="item-meta">要 ${o.qty} 件 · ${fmtJpy(o.product.price_jpy||0)} → ${fmt(o.product.price_twd)} · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span>${isDone?` <button style="font-size:10px;padding:2px 6px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;color:#666" onclick="unlockItem('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}')">解鎖</button>`:''}</div>
         </div>
         <div class="item-bottom">
           <img src="${esc(o.product.image||'')}" onerror="this.style.background='#eee'">
@@ -488,6 +489,15 @@ function applyStatus(r) {
     btn.onclick = () => triggerStage(stage);
     if (_uploadPollTimer) { clearInterval(_uploadPollTimer); _uploadPollTimer = null; }
   }
+}
+
+async function unlockItem(ts, email, pid) {
+  // Reset picked status to 待處理 by marking with status='' and qty=0
+  try {
+    const r = await fetch(api('mark_picked','&ts='+encodeURIComponent(ts)+'&email='+encodeURIComponent(email)+'&pid='+encodeURIComponent(pid)+'&qty=0&status=%E5%BE%85%E8%99%95%E7%90%86')).then(x=>x.json());
+    if (r.ok) { load(); }
+    else { alert('解鎖失敗: '+r.error); }
+  } catch(e) { alert('解鎖失敗: '+e); }
 }
 
 load();
