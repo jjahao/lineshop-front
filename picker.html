@@ -332,6 +332,10 @@ function renderOrders(r) {
         <img src="${esc(o.product.image||'')}" onerror="this.style.background='#e0e0e0'">
         <div class="item-name">${jpName||zhName||'(無)'}</div>
         ${zhName&&jpName?`<div class="item-name-zh">${zhName}</div>`:''}
+        <div class="item-meta">
+          <span style="font-size:13px;font-weight:700;color:#111">${fmtJpy(o.product.price_jpy||0)}</span>
+          <span style="font-size:11px;color:#888"> → ${fmt(o.product.price_twd)}</span>
+        </div>
         <div class="item-meta">要${o.qty}件 · <span class="stat-${tsafe}_${o.photo_id}" style="color:${sc};font-weight:700">${stat}</span>${isDone?` <button style="font-size:9px;padding:1px 4px;border:1px solid #ccc;border-radius:3px;background:#fff;cursor:pointer;color:#666" onclick="unlockItem('${esc(o.ts)}','${esc(o.email)}','${o.photo_id}',this)">解鎖</button>`:''}</div>
         <div class="item-row">
           <input class="item-qty" type="number" min="0" max="${o.qty}" value="${pk}" ${isDone?'disabled':''} id="pk_${tsafe}_${o.photo_id}">
