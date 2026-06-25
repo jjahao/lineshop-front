@@ -189,8 +189,11 @@ function rcart() {
 }
 
 function filt() {
-  const q = document.getElementById('q').value.toLowerCase();
-  render(q ? PRODS.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q)) : PRODS);
+  const tokens = document.getElementById('q').value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  render(tokens.length ? PRODS.filter(p => {
+    const text = ((p.name||'') + ' ' + (p.category||'')).toLowerCase();
+    return tokens.every(t => text.includes(t));
+  }) : PRODS);
 }
 
 function toast(m) { const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
