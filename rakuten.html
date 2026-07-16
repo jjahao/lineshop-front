@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>楽天サービス案内 | 天倉の役割とご利用メリット</title>
+<meta name="description" content="楽天市場・楽天24・楽天ブックス・楽天トラベルなど主要な楽天サービスをご案内。天倉は楽天商品の発見・比較・越境購入相談の入口として、各楽天ページへご案内します。">
+<style>
+:root{
+  --ink:#1f252c;
+  --soft-ink:#55606d;
+  --paper:#fffaf5;
+  --paper-2:#f6efe7;
+  --line:#e7d9cb;
+  --accent:#b3202a;
+  --accent-deep:#7f0f17;
+  --gold:#b88a3b;
+  --green:#0d6155;
+  --white:#ffffff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at top right, rgba(179,32,42,.08), transparent 28%),
+    linear-gradient(180deg, #fffdf9 0%, #fff8f1 100%);
+  line-height:1.75;
+}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:64px 0 42px;
+  background:
+    linear-gradient(135deg, rgba(127,15,23,.96), rgba(179,32,42,.88)),
+    linear-gradient(180deg, #9d1621, #6d0f16);
+  color:var(--white);
+}
+.hero::before{
+  content:"RAKUTEN";
+  position:absolute;
+  right:-24px;
+  top:-14px;
+  font-size:140px;
+  font-weight:900;
+  letter-spacing:10px;
+  color:rgba(255,255,255,.06);
+  pointer-events:none;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.4fr) minmax(280px,.9fr);
+  gap:28px;
+  align-items:end;
+}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:16px;
+  padding:7px 14px;
+  border:1px solid rgba(255,255,255,.34);
+  border-radius:999px;
+  background:rgba(255,255,255,.1);
+  font-size:13px;
+  letter-spacing:.08em;
+}
+h1{
+  margin:0 0 14px;
+  font-size:42px;
+  line-height:1.18;
+  letter-spacing:.01em;
+}
+.lead{
+  max-width:740px;
+  margin:0;
+  font-size:16px;
+  color:#fbe8e9;
+}
+.hero-note{
+  margin-top:18px;
+  padding:14px 16px;
+  border-radius:16px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(6px);
+  font-size:14px;
+  color:#fff3f0;
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:22px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:14px 18px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:800;
+  font-size:15px;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{
+  background:var(--white);
+  color:var(--accent-deep);
+  box-shadow:0 14px 30px rgba(41,8,11,.18);
+}
+.btn-secondary{
+  border:1px solid rgba(255,255,255,.34);
+  color:var(--white);
+  background:rgba(255,255,255,.08);
+}
+.hero-side{
+  padding:20px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:22px;
+  background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+}
+.hero-side h2{
+  margin:0 0 10px;
+  font-size:16px;
+  color:#fff4f4;
+}
+.hero-side ul{
+  margin:0;
+  padding-left:18px;
+  color:#ffe4e6;
+  font-size:14px;
+}
+.hero-side li + li{margin-top:8px}
+.section{padding:40px 0 12px}
+.eyebrow{
+  display:block;
+  margin-bottom:8px;
+  color:var(--gold);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+h2{
+  margin:0 0 8px;
+  font-size:28px;
+  line-height:1.25;
+}
+.sub{
+  margin:0;
+  color:var(--soft-ink);
+  font-size:15px;
+}
+.service-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+  gap:14px;
+  margin-top:22px;
+}
+.service-card,
+.role-card,
+.benefit-card,
+.notice-card,
+.example-card{
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(255,255,255,.84);
+  box-shadow:0 10px 30px rgba(49,35,28,.05);
+}
+.service-card{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:18px;
+}
+.service-label{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#fdf1f2;
+  color:var(--accent);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  width:max-content;
+}
+.service-card h3,
+.role-card h3,
+.benefit-card h3,
+.example-card h3{
+  margin:0;
+  font-size:19px;
+}
+.service-card p,
+.role-card p,
+.benefit-card p,
+.example-card p,
+.notice-card li{
+  margin:0;
+  color:var(--soft-ink);
+  font-size:14px;
+}
+.service-links{
+  margin-top:auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.mini-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:var(--accent-deep);
+  text-decoration:none;
+  font-size:13px;
+  font-weight:800;
+}
+.role-grid,
+.benefit-grid,
+.example-grid,
+.notice-grid{
+  display:grid;
+  gap:14px;
+  margin-top:22px;
+}
+.role-grid{grid-template-columns:repeat(auto-fit, minmax(250px, 1fr))}
+.benefit-grid{grid-template-columns:repeat(auto-fit, minmax(230px, 1fr))}
+.example-grid{grid-template-columns:repeat(auto-fit, minmax(270px, 1fr))}
+.notice-grid{grid-template-columns:1.2fr .8fr}
+.role-card,
+.benefit-card,
+.example-card{padding:18px}
+.icon{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  margin-bottom:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg, #fdf0e8, #fff7ee);
+  color:var(--accent);
+  font-size:20px;
+}
+.flow{
+  margin-top:22px;
+  display:grid;
+  gap:0;
+}
+.flow-step{
+  position:relative;
+  padding:14px 0 16px 54px;
+  border-bottom:1px dashed var(--line);
+}
+.flow-step:last-child{border-bottom:none}
+.flow-step::before{
+  content:attr(data-step);
+  position:absolute;
+  left:0;
+  top:12px;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:var(--accent);
+  color:var(--white);
+  font-size:13px;
+  font-weight:900;
+}
+.flow-step b{
+  display:block;
+  margin-bottom:4px;
+  font-size:16px;
+}
+.flow-step span{
+  color:var(--soft-ink);
+  font-size:14px;
+}
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:14px;
+}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 12px;
+  border-radius:999px;
+  background:#f4f4f1;
+  color:#3f464d;
+  font-size:13px;
+  text-decoration:none;
+}
+.notice-card{
+  padding:20px;
+}
+.notice-card ul{
+  margin:0;
+  padding-left:18px;
+}
+.notice-card li + li{margin-top:10px}
+.cta{
+  margin-top:26px;
+  padding:28px;
+  border-radius:24px;
+  background:
+    linear-gradient(135deg, rgba(13,97,85,.96), rgba(9,65,57,.92)),
+    linear-gradient(180deg, #0f5c4c, #09342f);
+  color:var(--white);
+}
+.cta h2{margin:0 0 8px;color:var(--white)}
+.cta p{
+  margin:0;
+  color:#d7efe9;
+  max-width:760px;
+  font-size:15px;
+}
+.cta .actions{margin-top:18px}
+.foot{
+  padding:24px 0 40px;
+  color:#66717d;
+  font-size:13px;
+}
+.foot-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+}
+.small{
+  font-size:12px;
+  color:#7b848f;
+}
+@media (max-width:900px){
+  .hero-grid,
+  .notice-grid{
+    grid-template-columns:1fr;
+  }
+  h1{font-size:34px}
+}
+@media (max-width:640px){
+  .hero{padding-top:54px}
+  .hero::before{font-size:92px;right:-10px;top:-2px}
+  h1{font-size:29px}
+  h2{font-size:24px}
+  .wrap{padding:0 18px}
+  .cta{padding:22px}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="pill">Independent Rakuten Guide by 天倉</div>
+      <h1>楽天の商品とサービスを、<br>迷わず見つけるための案内ページ</h1>
+      <p class="lead">当ページは、楽天グループの公式運営ページではありません。天倉が運営する独立した紹介ページとして、楽天の主要サービス・商品ジャンル・検索導線を整理し、最終的に各楽天ページへご案内します。</p>
+      <div class="hero-note">私たちの役割は「置き換えること」ではなく「つなぐこと」です。楽天のページへ進む前に、どのサービスを見るべきか、何を比べるべきか、日本語が難しいときはどこを確認すべきかをわかりやすく整えます。</div>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://www.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">楽天市場を見る</a>
+        <a class="btn btn-primary" href="https://ranking.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">人気ランキングを見る</a>
+        <a class="btn btn-secondary" href="https://line.me/ti/p/~@562spzag" target="_blank" rel="noopener noreferrer">相談窓口を開く</a>
+      </div>
+    </div>
+    <aside class="hero-side">
+      <h2>このページの前提</h2>
+      <ul>
+        <li>商品・価格・在庫・レビューの最終確認は、必ずリンク先の楽天ページで行います。</li>
+        <li>天倉は楽天商品の案内役であり、楽天公式ストアや楽天グループの代理人ではありません。</li>
+        <li>比較しづらい商品名・型番・JANの照合補助や、越境購入前の相談窓口として機能します。</li>
+      </ul>
+    </aside>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="section">
+    <span class="eyebrow">Major Services</span>
+    <h2>楽天の主要サービスを、まず入口から整理します</h2>
+    <p class="sub">「どこを見るべきか」が分かるだけで、探し物の速度は大きく変わります。ここでは、天倉が案内役として扱う代表的な楽天サービスをまとめています。</p>
+    <div class="service-grid">
+      <article class="service-card">
+        <span class="service-label">Marketplace</span>
+        <h3>楽天市場</h3>
+        <p>総合ショッピングモール。食品、日用品、家電、ホビー、ベビー用品まで幅広く探せる中心サービスです。まず迷ったらここから確認します。</p>
+        <div class="service-links">
+          <a class="mini-link" href="https://www.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">トップへ</a>
+          <a class="mini-link" href="https://search.rakuten.co.jp/search/mall/%E5%85%AC%E5%BC%8F/" target="_blank" rel="noopener noreferrer">公式ショップ検索</a>
+        </div>
+      </article>
+      <article class="service-card">
+        <span class="service-label">Daily Goods</span>
+        <h3>楽天24</h3>
+        <p>日用品、飲料、医薬品、コスメ、ベビー用品など、生活系の定番商品を効率よく探したいときの入口です。</p>
+        <div class="service-links">
+          <a class="mini-link" href="https://24.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">楽天24を見る</a>
+          <a class="mini-link" href="https://24.rakuten.co.jp/guide/" target="_blank" rel="noopener noreferrer">楽天24とは</a>
+        </div>
+      </article>
+      <article class="service-card">
+        <span class="service-label">Books & Media</span>
+        <h3>楽天ブックス</h3>
+        <p>本・雑誌・CD・DVD・ゲームなど、メディア系の探し物に向いたサービスです。予約商品やランキング確認にも向いています。</p>
+        <div class="service-links">
+          <a class="mini-link" href="https://books.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">楽天ブックスへ</a>
+          <a class="mini-link" href="https://books.rakuten.co.jp/dvd-blu-ray/" target="_blank" rel="noopener noreferrer">DVD・ブルーレイ</a>
+        </div>
+      </article>
+      <article class="service-card">
+        <span class="service-label">Travel</span>
+        <h3>楽天トラベル</h3>
+        <p>旅行・宿泊・出張手配の代表サービス。商品紹介中心の導線とは別に、楽天グループ全体の主要サービスとして明示的に案内します。</p>
+        <div class="service-links">
+          <a class="mini-link" href="https://travel.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">楽天トラベルへ</a>
+          <a class="mini-link" href="https://travel.rakuten.co.jp/business/" target="_blank" rel="noopener noreferrer">出張向けを見る</a>
+        </div>
+      </article>
+      <article class="service-card">
+        <span class="service-label">Ranking</span>
+        <h3>楽天ランキング</h3>
+        <p>今売れている商品や、ジャンル別の人気傾向を手早く把握したいときに便利です。比較候補を絞る前段として使えます。</p>
+        <div class="service-links">
+          <a class="mini-link" href="https://ranking.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">ランキングトップ</a>
+          <a class="mini-link" href="https://ranking.rakuten.co.jp/daily/" target="_blank" rel="noopener noreferrer">総合ランキング</a>
+        </div>
+      </article>
+      <article class="service-card">
+        <span class="service-label">Search Entry</span>
+        <h3>検索・比較の入口</h3>
+        <p>商品名、型番、ブランド、JANで候補を探し、楽天の商品ページへつなぐのがこのページの本来の役目です。実運用では取得データから個別の商品詳細ページへ案内します。</p>
+        <div class="service-links">
+          <a class="mini-link" href="https://search.rakuten.co.jp/search/mall/%E5%85%AC%E5%BC%8F%E3%82%B7%E3%83%A7%E3%83%83%E3%83%97/" target="_blank" rel="noopener noreferrer">公式ショップ一覧</a>
+          <a class="mini-link" href="https://search.rakuten.co.jp/search/mall/%E6%97%A5%E6%9C%AC+%E3%81%8A%E8%8F%93%E5%AD%90/" target="_blank" rel="noopener noreferrer">検索例を見る</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">Our Role</span>
+    <h2>天倉の役割は「販売先」ではなく「案内役 + 支援役」です</h2>
+    <p class="sub">楽天の商品を直接紹介し、楽天のページへつなぐことが第一目的です。そのうえで、言語・比較・越境の不安がある方だけに、必要最小限の支援を提供します。</p>
+    <div class="role-grid">
+      <article class="role-card">
+        <div class="icon">1</div>
+        <h3>どの楽天サービスを見るべきかを整理する</h3>
+        <p>楽天市場、楽天24、楽天ブックス、ランキングなど、目的に応じて見る場所を分けて案内します。最初の迷いを減らすのが私たちの役割です。</p>
+      </article>
+      <article class="role-card">
+        <div class="icon">2</div>
+        <h3>商品候補を比べやすくする</h3>
+        <p>商品名・型番・JAN・レビューの確認ポイントを整理し、似た商品が多いときに比較しやすい導線をつくります。最終遷移先は各楽天ページです。</p>
+      </article>
+      <article class="role-card">
+        <div class="icon">3</div>
+        <h3>必要な人だけ、越境購入の相談先を持てる</h3>
+        <p>台湾・香港など、日本語や配送方法に不安がある方に向けて、楽天ページを見たあとに相談できる窓口を用意します。相談は補助であり、楽天紹介の導線を妨げません。</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">Benefits</span>
+    <h2>このページを使うメリット</h2>
+    <p class="sub">「楽天に行けば何でもある」は事実でも、「どこから見れば早いか」は別問題です。ここでは、その判断コストを減らします。</p>
+    <div class="benefit-grid">
+      <article class="benefit-card">
+        <h3>日本語の検索負担を減らせる</h3>
+        <p>日本語キーワードに不慣れでも、カテゴリや導線から見に行けます。</p>
+      </article>
+      <article class="benefit-card">
+        <h3>型番・JANの見比べがしやすい</h3>
+        <p>似た商品を比較する前提でページを設計し、候補確認をスムーズにします。</p>
+      </article>
+      <article class="benefit-card">
+        <h3>ランキングと公式店を使い分けやすい</h3>
+        <p>売れ筋確認、公式ショップ確認、日用品特化確認を分けて案内します。</p>
+      </article>
+      <article class="benefit-card">
+        <h3>必要なら越境購入相談につなげられる</h3>
+        <p>楽天ページを確認したあとに、配送・合箱・購入可否の相談へ進めます。</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">Use Flow</span>
+    <h2>利用イメージ</h2>
+    <p class="sub">導線はシンプルです。まず楽天の中で確認し、その後に必要があれば私たちへ相談する、という順番を崩しません。</p>
+    <div class="flow">
+      <div class="flow-step" data-step="01">
+        <b>サービスを選ぶ</b>
+        <span>総合商品なら楽天市場、日用品なら楽天24、本やゲームなら楽天ブックス、と目的に応じて入口を選びます。</span>
+      </div>
+      <div class="flow-step" data-step="02">
+        <b>候補を比べる</b>
+        <span>ランキング、公式ショップ、型番、JAN、レビューを見て、どの商品を確認するかを絞ります。</span>
+      </div>
+      <div class="flow-step" data-step="03">
+        <b>楽天ページへ進む</b>
+        <span>商品詳細、価格、在庫、配送条件の最終確認は、必ず各楽天ページで行います。</span>
+      </div>
+      <div class="flow-step" data-step="04">
+        <b>必要なら天倉へ相談する</b>
+        <span>日本語確認、越境配送、まとめ買い、合箱、代行可否などが必要な場合にだけ、追加の相談窓口へ進みます。</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">Examples</span>
+    <h2>楽天内の紹介例</h2>
+    <p class="sub">このページでは、楽天の主要ジャンルや代表導線を整理して紹介します。実運用では、取得データから個別の商品詳細ページへ直接つなぎます。</p>
+    <div class="example-grid">
+      <article class="example-card">
+        <h3>人気ジャンルから探す</h3>
+        <p>まずは売れ筋や定番から候補を見たい方向けの入口です。</p>
+        <div class="chips">
+          <a class="chip" href="https://ranking.rakuten.co.jp/daily/100227/" target="_blank" rel="noopener noreferrer">食品ランキング</a>
+          <a class="chip" href="https://ranking.rakuten.co.jp/daily/100939/" target="_blank" rel="noopener noreferrer">美容・コスメ</a>
+          <a class="chip" href="https://ranking.rakuten.co.jp/daily/100371/" target="_blank" rel="noopener noreferrer">レディースファッション</a>
+        </div>
+      </article>
+      <article class="example-card">
+        <h3>キーワードから探す</h3>
+        <p>商品名やざっくりしたカテゴリ名から楽天内を見に行く例です。</p>
+        <div class="chips">
+          <a class="chip" href="https://search.rakuten.co.jp/search/mall/%E6%97%A5%E6%9C%AC+%E3%81%8A%E8%8F%93%E5%AD%90/" target="_blank" rel="noopener noreferrer">日本のお菓子</a>
+          <a class="chip" href="https://search.rakuten.co.jp/search/mall/%E3%83%99%E3%83%93%E3%83%BC%E7%94%A8%E5%93%81/" target="_blank" rel="noopener noreferrer">ベビー用品</a>
+          <a class="chip" href="https://search.rakuten.co.jp/search/mall/%E6%97%A5%E7%94%A8%E5%93%81/" target="_blank" rel="noopener noreferrer">日用品</a>
+        </div>
+      </article>
+      <article class="example-card">
+        <h3>公式・信頼重視で探す</h3>
+        <p>ブランド公式や店舗の信頼性を重視したいときの入口です。</p>
+        <div class="chips">
+          <a class="chip" href="https://search.rakuten.co.jp/search/mall/%E5%85%AC%E5%BC%8F/" target="_blank" rel="noopener noreferrer">公式ショップ</a>
+          <a class="chip" href="https://search.rakuten.co.jp/search/mall/%E5%85%AC%E5%BC%8F%E3%82%B7%E3%83%A7%E3%83%83%E3%83%97/" target="_blank" rel="noopener noreferrer">公式ショップ一覧</a>
+          <a class="chip" href="https://ranking.rakuten.co.jp/genre/" target="_blank" rel="noopener noreferrer">ジャンル別ランキング</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">Notice</span>
+    <h2>ご利用上の明示事項</h2>
+    <p class="sub">誤解を避けるため、ページの立ち位置と情報の扱いを明確にしています。</p>
+    <div class="notice-grid">
+      <article class="notice-card">
+        <h3>天倉の立場</h3>
+        <ul>
+          <li>当ページは天倉が運営する独立した案内ページであり、楽天グループの公式運営ページではありません。</li>
+          <li>当ページの目的は、楽天の商品・サービスを紹介し、各楽天ページへの導線を提供することです。</li>
+          <li>商品詳細、価格、在庫、送料、ポイント、購入条件の最終確認は、必ずリンク先の楽天ページで行ってください。</li>
+        </ul>
+      </article>
+      <article class="notice-card">
+        <h3>サポートの範囲</h3>
+        <ul>
+          <li>日本語確認、比較整理、越境購入前相談は補助的な役割です。</li>
+          <li>当ページ上で楽天の公式性を誤認させる表示は行いません。</li>
+          <li>楽天の商品紹介を主軸にし、必要時のみ相談窓口へつなげます。</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>まずは楽天の商品ページを確認し、そのうえで必要なことだけ相談する</h2>
+    <p>これが、当ページの基本設計です。楽天の商品を見つける入口として使い、購入判断や配送相談が必要な場合だけ、天倉のサポートへ進んでください。</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://www.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">楽天市場トップへ</a>
+      <a class="btn btn-primary" href="https://24.rakuten.co.jp/" target="_blank" rel="noopener noreferrer">楽天24を見る</a>
+      <a class="btn btn-secondary" href="https://line.me/ti/p/~@562spzag" target="_blank" rel="noopener noreferrer">相談窓口を開く</a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="foot-row">
+      <div>
+        <div>運営: 天倉</div>
+        <div class="small">楽天商品と主要サービスを整理して案内し、各楽天ページへつなぐための独立紹介ページです。</div>
+      </div>
+      <div>
+        <!-- Rakuten Web Services Attribution Snippet FROM HERE -->
+        <a href="https://webservice.rakuten.co.jp/" target="_blank"><img src="https://webservice.rakuten.co.jp/img/credit/200709/credit_22121.gif" border="0" alt="Rakuten Web Service Center" title="Rakuten Web Service Center" width="221" height="21"/></a>
+        <!-- Rakuten Web Services Attribution Snippet TO HERE -->
+      </div>
+    </div>
+  </footer>
+</main>
+
+</body>
+</html>
