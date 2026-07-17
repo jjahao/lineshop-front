@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yahoo!ショッピング案内 | 天倉の役割とご利用メリット</title>
+<meta name="description" content="Yahoo!ショッピングの主要な導線、ランキング、ストア検索、商品比較の考え方をご案内。天倉は独立した案内ページとして、最終的に各Yahoo!ショッピングの商品・ストアページへご案内します。">
+<style>
+:root{
+  --ink:#1b1f26;
+  --soft-ink:#596474;
+  --paper:#fff9f7;
+  --line:#ead8d3;
+  --accent:#ff0033;
+  --accent-deep:#c4002a;
+  --accent-soft:#fff1f4;
+  --green:#0e6154;
+  --white:#ffffff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at top right, rgba(255,0,51,.08), transparent 28%),
+    linear-gradient(180deg, #fffdfc 0%, #fff8f5 100%);
+  line-height:1.75;
+}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:64px 0 42px;
+  background:
+    linear-gradient(135deg, rgba(196,0,42,.96), rgba(255,0,51,.88)),
+    linear-gradient(180deg, #d9002f, #96001f);
+  color:var(--white);
+}
+.hero::before{
+  content:"YAHOO!";
+  position:absolute;
+  right:-12px;
+  top:-18px;
+  font-size:132px;
+  font-weight:900;
+  letter-spacing:8px;
+  color:rgba(255,255,255,.08);
+  pointer-events:none;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(280px,.85fr);
+  gap:28px;
+  align-items:end;
+}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:16px;
+  padding:7px 14px;
+  border:1px solid rgba(255,255,255,.34);
+  border-radius:999px;
+  background:rgba(255,255,255,.1);
+  font-size:13px;
+  letter-spacing:.08em;
+}
+h1{
+  margin:0 0 14px;
+  font-size:42px;
+  line-height:1.18;
+  letter-spacing:.01em;
+}
+.lead{
+  max-width:760px;
+  margin:0;
+  font-size:16px;
+  color:#ffe9ee;
+}
+.hero-note{
+  margin-top:18px;
+  padding:14px 16px;
+  border-radius:16px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(6px);
+  font-size:14px;
+  color:#fff4f6;
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:22px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:14px 18px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:800;
+  font-size:15px;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{
+  background:var(--white);
+  color:var(--accent-deep);
+  box-shadow:0 14px 30px rgba(50,8,15,.18);
+}
+.btn-secondary{
+  border:1px solid rgba(255,255,255,.34);
+  color:var(--white);
+  background:rgba(255,255,255,.08);
+}
+.hero-side{
+  padding:20px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:22px;
+  background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+}
+.hero-side h2{margin:0 0 10px;font-size:16px;color:#fff6f8}
+.hero-side ul{margin:0;padding-left:18px;color:#ffe1e7;font-size:14px}
+.hero-side li + li{margin-top:8px}
+.section{padding:40px 0 12px}
+.eyebrow{
+  display:block;
+  margin-bottom:8px;
+  color:var(--accent);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+h2{margin:0 0 8px;font-size:28px;line-height:1.25}
+.sub{margin:0;color:var(--soft-ink);font-size:15px}
+.grid{
+  display:grid;
+  gap:14px;
+  margin-top:22px;
+}
+.services{grid-template-columns:repeat(auto-fit, minmax(240px, 1fr))}
+.roles{grid-template-columns:repeat(auto-fit, minmax(250px, 1fr))}
+.notices{grid-template-columns:1.1fr .9fr}
+.card{
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(255,255,255,.86);
+  box-shadow:0 10px 30px rgba(49,35,28,.05);
+  padding:18px;
+}
+.service-label{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  background:var(--accent-soft);
+  color:var(--accent);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  width:max-content;
+}
+.card h3{margin:12px 0 8px;font-size:19px}
+.card p,.card li,.flow-step span{margin:0;color:var(--soft-ink);font-size:14px}
+.mini-links{
+  margin-top:12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.mini-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:var(--accent-deep);
+  text-decoration:none;
+  font-size:13px;
+  font-weight:800;
+}
+.icon{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  margin-bottom:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg, #fff0f3, #fff8f9);
+  color:var(--accent);
+  font-size:20px;
+}
+.flow{margin-top:22px;display:grid;gap:0}
+.flow-step{
+  position:relative;
+  padding:14px 0 16px 54px;
+  border-bottom:1px dashed var(--line);
+}
+.flow-step:last-child{border-bottom:none}
+.flow-step::before{
+  content:attr(data-step);
+  position:absolute;
+  left:0;
+  top:12px;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:var(--accent);
+  color:var(--white);
+  font-size:13px;
+  font-weight:900;
+}
+.flow-step b{display:block;margin-bottom:4px;font-size:16px}
+.notice-card ul{margin:0;padding-left:18px}
+.notice-card li + li{margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 12px;
+  border-radius:999px;
+  background:#f4f4f1;
+  color:#3f464d;
+  font-size:13px;
+  text-decoration:none;
+}
+.cta{
+  margin-top:26px;
+  padding:28px;
+  border-radius:24px;
+  background:
+    linear-gradient(135deg, rgba(14,97,84,.96), rgba(9,65,57,.92)),
+    linear-gradient(180deg, #0f5c4c, #09342f);
+  color:var(--white);
+}
+.cta h2{margin:0 0 8px;color:var(--white)}
+.cta p{margin:0;color:#d7efe9;max-width:760px;font-size:15px}
+.cta .actions{margin-top:18px}
+.foot{padding:24px 0 40px;color:#66717d;font-size:13px}
+.foot-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+}
+.small{font-size:12px;color:#7b848f}
+@media (max-width:900px){
+  .hero-grid,.notices{grid-template-columns:1fr}
+  h1{font-size:34px}
+}
+@media (max-width:640px){
+  .hero{padding-top:54px}
+  .hero::before{font-size:88px;right:-6px;top:-2px}
+  h1{font-size:29px}
+  h2{font-size:24px}
+  .wrap{padding:0 18px}
+  .cta{padding:22px}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="pill">Independent Yahoo! Shopping Guide by 天倉</div>
+      <h1>Yahoo!ショッピングの商品導線を、<br>迷わずたどるための案内ページ</h1>
+      <p class="lead">当ページは、LINEヤフー株式会社またはYahoo!ショッピングの公式運営ページではありません。天倉が運営する独立した紹介ページとして、Yahoo!ショッピング内の商品探索・比較・ストア確認の導線を整理し、最終的に各Yahoo!ショッピングの商品ページやストアページへご案内します。</p>
+      <div class="hero-note">私たちの役割は、Yahoo!ショッピングを置き換えることではなく、探し方を分かりやすく整えることです。カテゴリ、ランキング、ストア比較、JANや型番の照合ポイントを整理し、必要な場合のみ越境購入の相談窓口につなぎます。</div>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://shopping.yahoo.co.jp/" target="_blank" rel="noopener noreferrer">Yahoo!ショッピングを見る</a>
+        <a class="btn btn-primary" href="https://shopping.yahoo.co.jp/ranking/" target="_blank" rel="noopener noreferrer">ランキングを見る</a>
+        <a class="btn btn-secondary" href="https://line.me/ti/p/~@562spzag" target="_blank" rel="noopener noreferrer">相談窓口を開く</a>
+      </div>
+    </div>
+    <aside class="hero-side">
+      <h2>このページの前提</h2>
+      <ul>
+        <li>価格、在庫、送料、ストア評価の最終確認は、必ずリンク先のYahoo!ショッピングページで行います。</li>
+        <li>天倉はYahoo!ショッピング商品の案内役であり、公式ストアやYahoo!ショッピング運営者の代理人ではありません。</li>
+        <li>商品名、型番、JAN、容量違いの見分けが難しい場合に、比較と確認の補助を行います。</li>
+      </ul>
+    </aside>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="section">
+    <span class="eyebrow">Major Paths</span>
+    <h2>Yahoo!ショッピングの主要導線を、入口ごとに整理します</h2>
+    <p class="sub">「何を見ればよいか」が分かるだけで、検索の迷いはかなり減ります。ここでは、天倉が案内役として扱う代表的なYahoo!ショッピング導線をまとめています。</p>
+    <div class="grid services">
+      <article class="card">
+        <span class="service-label">Marketplace</span>
+        <h3>Yahoo!ショッピング</h3>
+        <p>総合ショッピングの中心入口です。食品、日用品、家電、ホビー、ベビー用品など、まず広く探したいときはここから入ります。</p>
+        <div class="mini-links">
+          <a class="mini-link" href="https://shopping.yahoo.co.jp/" target="_blank" rel="noopener noreferrer">トップへ</a>
+          <a class="mini-link" href="https://shopping.yahoo.co.jp/categoryranking/" target="_blank" rel="noopener noreferrer">カテゴリを見る</a>
+        </div>
+      </article>
+      <article class="card">
+        <span class="service-label">Ranking</span>
+        <h3>ランキング</h3>
+        <p>人気商品や売れ筋を素早く確認したいときの入口です。相場感や定番候補を掴むときに使います。</p>
+        <div class="mini-links">
+          <a class="mini-link" href="https://shopping.yahoo.co.jp/ranking/" target="_blank" rel="noopener noreferrer">総合ランキング</a>
+        </div>
+      </article>
+      <article class="card">
+        <span class="service-label">Search</span>
+        <h3>商品検索</h3>
+        <p>商品名、ブランド名、型番、JANから候補を絞り込む導線です。特に容量違い・型番違いの見分けに向いています。</p>
+        <div class="mini-links">
+          <a class="mini-link" href="https://shopping.yahoo.co.jp/search" target="_blank" rel="noopener noreferrer">検索ページへ</a>
+        </div>
+      </article>
+      <article class="card">
+        <span class="service-label">Stores</span>
+        <h3>優良ストア確認</h3>
+        <p>同じ商品でも、販売ストアごとに送料、発送目安、評価、特典条件が異なります。信頼できるストアかどうかを見極める入口として使います。</p>
+        <div class="mini-links">
+          <a class="mini-link" href="https://shopping.yahoo.co.jp/notice/goldstore/" target="_blank" rel="noopener noreferrer">優良ストアを見る</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">Our Role</span>
+    <h2>天倉の役割は「販売先」ではなく「案内役 + 比較支援役」です</h2>
+    <p class="sub">Yahoo!ショッピングの公式導線にたどり着くまでの迷いを減らし、必要な場合だけ越境購入の相談へ進める設計にしています。</p>
+    <div class="grid roles">
+      <article class="card">
+        <div class="icon">1</div>
+        <h3>入口を整理する</h3>
+        <p>総合検索、カテゴリ、ランキング、ストア比較など、目的に応じて最初に見るべき場所を切り分けて案内します。</p>
+      </article>
+      <article class="card">
+        <div class="icon">2</div>
+        <h3>商品差分を見分ける</h3>
+        <p>同名商品の容量違い、限定版、型番違い、JAN違いを見分けるために、比較の観点を補助します。</p>
+      </article>
+      <article class="card">
+        <div class="icon">3</div>
+        <h3>必要な時だけ支援する</h3>
+        <p>購入判断、配送相談、日本語確認が必要な場合だけ、天倉の相談窓口へ進めるようにしています。</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">Flow</span>
+    <h2>ご利用の流れ</h2>
+    <p class="sub">このページは、Yahoo!ショッピングの公式商品ページへ進む前の整理用ガイドとして設計しています。</p>
+    <div class="flow">
+      <div class="flow-step" data-step="01">
+        <b>Yahoo!ショッピング内で候補を探す</b>
+        <span>商品名、ブランド名、JAN、型番、ランキング、カテゴリなどから候補を絞ります。</span>
+      </div>
+      <div class="flow-step" data-step="02">
+        <b>商品ページとストア条件を確認する</b>
+        <span>価格だけでなく、送料、発送目安、ストア評価、ポイント条件まで見て比較します。</span>
+      </div>
+      <div class="flow-step" data-step="03">
+        <b>型番・JAN・容量違いを照合する</b>
+        <span>類似商品が多い場合は、JANや型番、内容量、カラー、限定仕様の差分を確認します。</span>
+      </div>
+      <div class="flow-step" data-step="04">
+        <b>必要なら天倉へ相談する</b>
+        <span>日本語確認、比較相談、越境購入の可否整理が必要な場合のみ、相談窓口をご利用ください。</span>
+      </div>
+    </div>
+    <div class="chips">
+      <a class="chip" href="https://shopping.yahoo.co.jp/" target="_blank" rel="noopener noreferrer">Yahoo!ショッピング</a>
+      <a class="chip" href="https://shopping.yahoo.co.jp/ranking/" target="_blank" rel="noopener noreferrer">ランキング</a>
+      <a class="chip" href="https://shopping.yahoo.co.jp/categoryranking/" target="_blank" rel="noopener noreferrer">カテゴリ</a>
+      <a class="chip" href="https://line.me/ti/p/~@562spzag" target="_blank" rel="noopener noreferrer">LINE相談</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="eyebrow">Notice</span>
+    <h2>ご利用前に確認いただきたいこと</h2>
+    <div class="grid notices">
+      <article class="card notice-card">
+        <h3>天倉の立場</h3>
+        <ul>
+          <li>当ページは天倉が運営する独立した案内ページであり、Yahoo!ショッピングの公式運営ページではありません。</li>
+          <li>商品情報の最終的な正確性、在庫、送料、ポイント条件は、リンク先のYahoo!ショッピング商品ページ・ストアページでご確認ください。</li>
+          <li>このページは、商品探索や比較の入口として機能し、必要時のみ相談窓口へ接続することを目的としています。</li>
+        </ul>
+      </article>
+      <article class="card notice-card">
+        <h3>このページで扱う内容</h3>
+        <ul>
+          <li>Yahoo!ショッピングの代表的な導線整理</li>
+          <li>商品比較時に確認すべき観点の提示</li>
+          <li>商品名、型番、JAN、容量違いの見分け補助</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Yahoo!ショッピングの商品を見つける入口としてご利用ください</h2>
+    <p>このページの目的は、Yahoo!ショッピングの商品やストアへ迷わず到達できるようにすることです。購入判断や配送相談が必要な場合だけ、天倉のサポートへ進んでください。</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://shopping.yahoo.co.jp/" target="_blank" rel="noopener noreferrer">Yahoo!ショッピングトップへ</a>
+      <a class="btn btn-primary" href="https://shopping.yahoo.co.jp/ranking/" target="_blank" rel="noopener noreferrer">人気ランキングへ</a>
+      <a class="btn btn-secondary" href="https://line.me/ti/p/~@562spzag" target="_blank" rel="noopener noreferrer">相談窓口へ</a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <div class="foot-row">
+    <div>
+      <div>運営: 天倉</div>
+      <div>案内対象: Yahoo!ショッピング内の商品・ストア導線</div>
+    </div>
+    <div class="small">
+      <div>日本拠点: 東京都千代田区岩本町 2-1-8 NAビル1階</div>
+      <div>当ページは独立した案内ページです。各公式ページの最新情報をご確認ください。</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
