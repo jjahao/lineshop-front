@@ -106,7 +106,7 @@ footer{background:var(--nav);color:#ddd;text-align:center;font-size:12px;padding
   <div class="sec card calc" id="calc">
     <h2>🧮 到手價試算</h2>
     <div class="sub">輸入日幣價格＋重量／長寬高，立刻算出台灣到手價</div>
-    <label>商品連結（選填，樂天／Yahoo 可自動帶入價格）</label>
+    <label>商品連結（選填，方便客服核對商品；價格請直接填在下方）</label>
     <input id="url" placeholder="https://item.rakuten.co.jp/...">
     <div class="row">
       <div><label>商品日幣（税込）</label><input id="jpy" type="number" placeholder="例：3980"></div>
@@ -255,7 +255,13 @@ function tryFetchPrice(){
 
 function render(){
   var jpy=parseFloat(document.getElementById('jpy').value);
-  if(!jpy||jpy<=0){alert('讀不到自動價格，請直接輸入商品日幣價格');return;}
+  if(!jpy||jpy<=0){
+    var box=document.getElementById('jpy');
+    box.style.borderColor='#b12704'; box.focus();
+    alert('請填入「商品日幣（税込）」金額才能試算。\n\n在商品頁面找到日幣價格（例：3,980円）填進去即可；不確定可直接 LINE 問客服。');
+    return;
+  }
+  document.getElementById('jpy').style.borderColor='#888c8c';
   var kg=parseFloat(document.getElementById('kg').value)||0;
   var L=parseFloat(document.getElementById('dl').value)||0;
   var W=parseFloat(document.getElementById('dw').value)||0;
