@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GRAND天倉｜日本代購・空運直送台灣</title>
+<meta name="description" content="日本超商藥妝百貨Costco代購，買手實地採購，空運直送台灣。到手價線上試算。">
+<style>
+:root{--nav:#131921;--nav2:#232f3e;--amz:#febd69;--amz-d:#f3a847;--yellow:#ffd814;--yellow-d:#fcd200;
+--orange:#ffa41c;--link:#007185;--link-h:#c7511f;--price:#b12704;--ink:#0f1111;--muted:#565959;--bg:#eaeded;--card:#fff;--line:#d5d9d9;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:0 14px}
+a{color:var(--link);text-decoration:none}a:hover{color:var(--link-h);text-decoration:underline}
+.topbar{background:var(--nav);color:#fff;padding:8px 0}
+.topbar .wrap{display:flex;align-items:center;gap:12px}
+.logo{font-size:20px;font-weight:800;letter-spacing:1px;white-space:nowrap}.logo span{color:var(--amz)}
+.search{flex:1;display:flex;min-width:0;border-radius:6px;overflow:hidden}
+.search input{flex:1;min-width:0;border:0;padding:9px 12px;font-size:14px;outline:none}
+.search button{background:var(--amz);border:0;padding:0 16px;font-size:16px;cursor:pointer;color:#0f1111}
+.search button:hover{background:var(--amz-d)}
+.topbar .acct{font-size:12px;line-height:1.2;white-space:nowrap}
+.topbar .acct a{color:#fff}
+.subnav{background:var(--nav2);color:#fff;font-size:13px}
+.subnav .wrap{display:flex;gap:18px;padding:8px 14px;overflow-x:auto}
+.subnav a{color:#fff;white-space:nowrap}
+.hero{background:linear-gradient(180deg,#232f3e,#37475a);color:#fff;text-align:center;padding:26px 0}
+.hero h1{font-size:22px}.hero p{font-size:13px;opacity:.85;margin-top:6px}
+.hero .cta{margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid transparent}
+.btn-y{background:var(--yellow);border-color:var(--yellow-d);color:#0f1111}
+.btn-y:hover{background:#f7ca00;text-decoration:none;color:#0f1111}
+.btn-o{background:var(--orange);border-color:#ff8f00;color:#0f1111}
+.btn-o:hover{background:#fa8900;text-decoration:none;color:#0f1111}
+.btn-line{background:#06c755;color:#fff}.btn-line:hover{background:#05b34c;text-decoration:none;color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px}
+.sec{margin:18px 0}.sec-h{font-size:19px;font-weight:700;padding:14px 4px 8px}
+.calc{padding:18px 16px}.calc h2{font-size:20px}.calc .sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.calc label{font-size:12px;font-weight:700;display:block;margin:10px 0 4px}
+.calc input{width:100%;padding:10px 11px;border:1px solid #888c8c;border-radius:7px;font-size:15px;box-shadow:inset 0 1px 2px rgba(15,17,17,.1)}
+.calc input:focus{outline:0;border-color:var(--amz-d);box-shadow:0 0 0 3px #f7e9c9}
+.calc .row{display:flex;gap:10px}.calc .row>div{flex:1}
+.calc .go{width:100%;margin-top:16px;padding:12px;background:var(--yellow);border:1px solid var(--yellow-d);border-radius:8px;font-size:15px;font-weight:800;cursor:pointer}
+.calc .go:hover{background:#f7ca00}
+.calc .go:disabled{opacity:.6;cursor:wait}
+.result{display:none;margin-top:16px;background:#fff;border:1px solid var(--line);border-top:3px solid var(--amz);border-radius:8px;padding:14px}
+.result .total{font-size:28px;font-weight:800;color:var(--price)}
+.result table{width:100%;font-size:13px;margin-top:8px;border-collapse:collapse}
+.result td{padding:4px 0;color:var(--muted)}.result td:last-child{text-align:right;font-weight:700;color:var(--ink)}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:0 4px 6px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;transition:box-shadow .15s}
+.pcard:hover{box-shadow:0 2px 12px rgba(15,17,17,.15)}
+.pcard .ph{aspect-ratio:1;background:#fff;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #f0f0f0;overflow:hidden}
+.pcard .ph img{width:100%;height:100%;object-fit:contain}
+.pcard .nm{font-size:13px;padding:8px 8px 2px;color:var(--link);min-height:42px}
+.pcard .tag{font-size:11px;color:var(--muted);padding:0 8px}
+.pcard a.buy{display:block;margin:8px;padding:8px;background:var(--yellow);border:1px solid var(--yellow-d);color:#0f1111;border-radius:18px;font-size:12px;font-weight:700;text-align:center}
+.pcard a.buy:hover{background:#f7ca00;text-decoration:none}
+.lux{background:#0f1111;border-radius:8px;color:#e9dcc3;text-align:center;padding:28px 18px;margin:18px 0}
+.lux h2{font-family:Georgia,'Songti TC',serif;font-size:22px;letter-spacing:4px;color:#c9a962;font-weight:400}
+.lux p{font-size:13px;color:#a9a08e;margin:8px 0 14px}
+.lux a{display:inline-block;padding:11px 26px;border:1px solid #c9a962;color:#c9a962;border-radius:2px;font-size:14px;letter-spacing:2px}
+.lux a:hover{background:#c9a962;color:#0f1111;text-decoration:none}
+.steps{display:flex;gap:12px;text-align:center;padding:0 4px 8px}
+.steps>div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 8px}
+.steps .ico{font-size:30px}.steps b{display:block;margin:6px 0 2px;font-size:14px}.steps small{color:var(--muted);font-size:12px}
+.faq{padding:0 4px 6px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:8px;font-size:14px}
+.faq summary{font-weight:700;cursor:pointer}.faq p{margin-top:6px;color:var(--muted);font-size:13px}
+.totop{background:var(--nav2);color:#fff;text-align:center;padding:14px;font-size:13px;cursor:pointer}
+.totop:hover{background:#3a4553}
+footer{background:var(--nav);color:#ddd;text-align:center;font-size:12px;padding:22px 0 30px}
+@media(max-width:560px){.steps{flex-direction:column}.logo{font-size:17px}}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <div class="logo">GRAND<span>天倉</span></div>
+  <div class="search"><input id="q" placeholder="搜尋日本商品"><button onclick="doSearch()">🔍</button></div>
+  <div class="acct"><a href="https://grand.shop2000.com.tw/shop2000_prog/member/mem_login_pop.aspx?vdir=grand">你好，訪客<br><b>登入 / 加入會員</b></a></div>
+</div></div>
+
+<div class="subnav"><div class="wrap">
+  <a href="#calc">🧮 到手價試算</a>
+  <a href="#hot">🔥 熱銷商品</a>
+  <a href="luxury.html">💎 精品館</a>
+  <a href="#how">🛒 怎麼買</a>
+  <a href="#faq">❓ 常見問題</a>
+  <a href="https://grand.shop2000.com.tw">🏠 官網</a>
+</div></div>
+
+<div class="hero"><div class="wrap">
+  <h1>日本商品代購・空運直送台灣</h1>
+  <p>買手實地採購 ‧ 超商藥妝百貨 Costco ‧ 集運報關到府</p>
+  <div class="cta">
+    <a class="btn btn-y" href="https://grand.shop2000.com.tw/member">加入會員</a>
+    <a class="btn btn-o" href="https://grand.shop2000.com.tw/shop2000_prog/member/mem_login_pop.aspx?vdir=grand">會員登入</a>
+    <a class="btn btn-line" href="https://line.me/ti/p/~@562spzag">💬 LINE 詢問</a>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+  <div class="sec card calc" id="calc">
+    <h2>🧮 到手價試算</h2>
+    <div class="sub">輸入日幣價格＋重量／長寬高，立刻算出台灣到手價</div>
+    <label>商品連結（選填，樂天／Yahoo 可自動帶入價格）</label>
+    <input id="url" placeholder="https://item.rakuten.co.jp/...">
+    <div class="row">
+      <div><label>商品日幣（税込）</label><input id="jpy" type="number" placeholder="例：3980"></div>
+      <div><label>重量 kg</label><input id="kg" type="number" step="0.1" placeholder="例：1.2"></div>
+    </div>
+    <label>包裹尺寸 cm（選填，算容積）</label>
+    <div class="row">
+      <div><input id="dl" type="number" placeholder="長"></div>
+      <div><input id="dw" type="number" placeholder="寬"></div>
+      <div><input id="dh" type="number" placeholder="高"></div>
+    </div>
+    <button class="go" id="goBtn" onclick="calc()">算出到手價</button>
+    <div class="result" id="res">
+      <div>到台灣手上約 <span class="total" id="total">—</span></div>
+      <table>
+        <tr><td>實重</td><td id="rw">—</td></tr>
+        <tr><td>容積（長×寬×高÷<span id="rdiv">6000</span>）</td><td id="rv">—</td></tr>
+        <tr style="border-top:1px solid #eee"><td id="r1label">商品（日幣 × 0.23）</td><td id="r1">—</td></tr>
+        <tr><td id="r2label">國際運費</td><td id="r2">—</td></tr>
+        <tr><td>代購手續費</td><td id="r3">—</td></tr>
+      </table>
+      <div class="note">＊運費以「實重 vs 容積取大」計價；本試算為預估，下單前請由 LINE 提供正式報價。</div>
+    </div>
+    <div class="note" id="rateStamp" style="text-align:right">匯率 0.23</div>
+  </div>
+
+  <div class="sec" id="hot">
+    <div class="sec-h">🔥 熱銷商品（會員登入看優惠價）</div>
+    <div class="grid">
+      <div class="pcard">
+        <div class="ph"><img src="img/showcase/4562214822374.jpg" alt="一蘭 豚骨杯麵" loading="lazy"></div>
+        <div class="nm">一蘭 豚骨杯麵</div>
+        <div class="tag">日本直送</div>
+        <a class="buy" href="https://grand.shop2000.com.tw/member">加入會員看價格</a>
+      </div>
+      <div class="pcard">
+        <div class="ph"><img src="img/showcase/4562214822541.jpg" alt="一蘭 旨辣濃郁增量" loading="lazy"></div>
+        <div class="nm">一蘭 旨辣濃郁增量</div>
+        <div class="tag">日本直送</div>
+        <a class="buy" href="https://grand.shop2000.com.tw/member">加入會員看價格</a>
+      </div>
+      <div class="pcard">
+        <div class="ph"><img src="img/showcase/4562214822893.jpg" alt="一蘭 博多細麵" loading="lazy"></div>
+        <div class="nm">一蘭 博多細麵</div>
+        <div class="tag">日本直送</div>
+        <a class="buy" href="https://grand.shop2000.com.tw/member">加入會員看價格</a>
+      </div>
+      <div class="pcard">
+        <div class="ph"><img src="img/showcase/4562214822909.jpg" alt="一蘭 博多細麵 附秘傳辣粉" loading="lazy"></div>
+        <div class="nm">一蘭 博多細麵 附秘傳辣粉</div>
+        <div class="tag">日本直送</div>
+        <a class="buy" href="https://grand.shop2000.com.tw/member">加入會員看價格</a>
+      </div>
+      <div class="pcard">
+        <div class="ph"><img src="img/showcase/4901037632119.jpg" alt="YOSHIMI 北海道起司米果" loading="lazy"></div>
+        <div class="nm">YOSHIMI 北海道起司米果</div>
+        <div class="tag">日本直送</div>
+        <a class="buy" href="https://grand.shop2000.com.tw/member">加入會員看價格</a>
+      </div>
+      <div class="pcard">
+        <div class="ph"><img src="img/showcase/4901037632157.jpg" alt="YOSHIMI 札幌米果燒玉米" loading="lazy"></div>
+        <div class="nm">YOSHIMI 札幌米果燒玉米</div>
+        <div class="tag">日本直送</div>
+        <a class="buy" href="https://grand.shop2000.com.tw/member">加入會員看價格</a>
+      </div>
+      <div class="pcard">
+        <div class="ph"><img src="img/showcase/4951436045041.jpg" alt="森白製菓(股) 橄欖＆橄欖米果" loading="lazy"></div>
+        <div class="nm">森白製菓(股) 橄欖＆橄欖米果</div>
+        <div class="tag">日本直送</div>
+        <a class="buy" href="https://grand.shop2000.com.tw/member">加入會員看價格</a>
+      </div>
+      <div class="pcard">
+        <div class="ph"><img src="img/showcase/4951436045072.jpg" alt="森白製菓(股) 烤玉米" loading="lazy"></div>
+        <div class="nm">森白製菓(股) 烤玉米</div>
+        <div class="tag">日本直送</div>
+        <a class="buy" href="https://grand.shop2000.com.tw/member">加入會員看價格</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lux">
+    <h2>PREMIUM SELECT</h2>
+    <p>精品包・腕錶　日本直源代購｜一對一專屬服務</p>
+    <a href="luxury.html">進入精品館 →</a>
+  </div>
+
+  <div class="sec" id="how">
+    <div class="sec-h">🛒 三步驟輕鬆買</div>
+    <div class="steps">
+      <div><div class="ico">💬</div><b>1. LINE 下單</b><small>貼連結或截圖給小幫手，確認報價</small></div>
+      <div><div class="ico">🇯🇵</div><b>2. 日本採購</b><small>買手實地採買／官網下單，入倉集運</small></div>
+      <div><div class="ico">📦</div><b>3. 台灣到手</b><small>空運報關，宅配到府或超取</small></div>
+    </div>
+  </div>
+
+  <div class="sec faq" id="faq">
+    <div class="sec-h">❓ 常見問題</div>
+    <details><summary>運費怎麼算？</summary><p>實重與容積（長×寬×高cm÷6000）取大者計價：首公斤 NT$550，之後每公斤 NT$250。每筆代購另收手續費 NT$100。</p></details>
+    <details><summary>多久到貨？</summary><p>日本入倉後約 7～14 個工作天空運抵台（依班機與報關狀況）。</p></details>
+    <details><summary>會有關稅嗎？</summary><p>依台灣海關規定，完稅價格超過 NT$2,000 可能產生稅費，由收件人支付。</p></details>
+    <details><summary>可以退換貨嗎？</summary><p>代購商品皆為客製化跨國採購，<b>恕無法退換</b>；下單前請確認規格，有疑問先 LINE 詢問。</p></details>
+  </div>
+
+</div>
+
+<div class="totop" onclick="scrollTo(0,0)">▲ 回到頂端</div>
+<footer>Copyright © 2026 GRAND天倉. All Rights Reserved.</footer>
+
+<script>
+/* 報價參數：優先讀 Google Sheet 控制台，讀不到用保底值（保底值須與 Sheet 同值） */
+var CONFIG = {rate:0.23,first:550,next:250,fee:100,divisor:6000,updated:''};
+var CONTROL_URL = "";
+
+function stamp(){
+  document.getElementById('rateStamp').textContent =
+    '匯率 '+CONFIG.rate+(CONFIG.updated?'（更新於 '+CONFIG.updated+'）':'');
+  document.getElementById('rdiv').textContent = CONFIG.divisor;
+}
+function loadConfig(){
+  if(!CONTROL_URL) return;
+  fetch(CONTROL_URL+'?action=config',{cache:'no-store'})
+    .then(function(r){return r.json();})
+    .then(function(c){
+      if(c && c.rate>0){
+        CONFIG.rate=c.rate; CONFIG.first=c.first||CONFIG.first; CONFIG.next=c.next||CONFIG.next;
+        CONFIG.fee=(c.fee!=null?c.fee:CONFIG.fee); CONFIG.divisor=c.divisor||CONFIG.divisor;
+        CONFIG.updated=c.updated||''; stamp();
+      }
+    }).catch(function(){});
+}
+
+/* 貼連結自動帶價（走 GAS 代理，API 金鑰不落前端） */
+function tryFetchPrice(){
+  var u=document.getElementById('url').value.trim();
+  if(!u || !CONTROL_URL) return Promise.resolve(false);
+  var btn=document.getElementById('goBtn');
+  btn.disabled=true; btn.textContent='讀取商品價格中…';
+  return fetch(CONTROL_URL+'?action=price&url='+encodeURIComponent(u),{cache:'no-store'})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d && d.price>0){ document.getElementById('jpy').value=d.price; return true; }
+      return false;
+    }).catch(function(){return false;})
+    .then(function(ok){ btn.disabled=false; btn.textContent='算出到手價'; return ok; });
+}
+
+function render(){
+  var jpy=parseFloat(document.getElementById('jpy').value);
+  if(!jpy||jpy<=0){alert('讀不到自動價格，請直接輸入商品日幣價格');return;}
+  var kg=parseFloat(document.getElementById('kg').value)||0;
+  var L=parseFloat(document.getElementById('dl').value)||0;
+  var W=parseFloat(document.getElementById('dw').value)||0;
+  var H=parseFloat(document.getElementById('dh').value)||0;
+  var vol=(L>0&&W>0&&H>0)?(L*W*H/CONFIG.divisor):0;
+  if(kg<=0&&vol<=0){alert('請輸入重量，或長寬高（至少一項）');return;}
+  var billKg=Math.max(1,Math.ceil(Math.max(kg,vol)));
+  var goods=Math.ceil(jpy*CONFIG.rate);
+  var ship=CONFIG.first+(billKg-1)*CONFIG.next;
+  var volBigger=(vol>kg&&vol>0);
+  document.getElementById('rw').textContent = kg>0?kg.toFixed(1)+' kg'+(!volBigger?'　← 採計':''):'未填';
+  document.getElementById('rv').textContent = vol>0?vol.toFixed(1)+' kg'+(volBigger?'　← 採計':''):'未填長寬高';
+  document.getElementById('r1label').textContent = '商品（日幣 × '+CONFIG.rate+'）';
+  document.getElementById('r1').textContent='NT$'+goods.toLocaleString();
+  document.getElementById('r2label').textContent='國際運費（計費 '+billKg+'kg，依'+(volBigger?'容積 '+vol.toFixed(1):'實重 '+kg.toFixed(1))+'kg）';
+  document.getElementById('r2').textContent='NT$'+ship.toLocaleString();
+  document.getElementById('r3').textContent='NT$'+CONFIG.fee.toLocaleString();
+  document.getElementById('total').textContent='NT$'+(goods+ship+CONFIG.fee).toLocaleString();
+  document.getElementById('res').style.display='block';
+}
+function calc(){
+  var jpy=parseFloat(document.getElementById('jpy').value);
+  if((!jpy||jpy<=0) && document.getElementById('url').value.trim()){ tryFetchPrice().then(render); }
+  else render();
+}
+function doSearch(){
+  var q=document.getElementById('q').value.trim();
+  location.href = q ? 'https://grand.shop2000.com.tw/search?kw='+encodeURIComponent(q) : 'https://grand.shop2000.com.tw';
+}
+stamp(); loadConfig();
+</script>
+</body>
+</html>
