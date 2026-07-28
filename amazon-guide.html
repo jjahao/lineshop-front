@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="GRAND天倉精選 Amazon 日本人氣商品。可自行前往 Amazon 購買，或委託代購報價、EZ WAY 實名委任後空運到台。">
+<meta name="theme-color" content="#131921">
+<title>Amazon 日本好物精選｜GRAND天倉</title>
+<style>
+:root{
+  --nav:#131921;--nav2:#232f3e;--orange:#ff9900;--yellow:#ffd814;
+  --yellow2:#f7ca00;--teal:#007185;--red:#b12704;--green:#067d62;
+  --ink:#0f1111;--muted:#565959;--line:#d5d9d9;--bg:#f3f4f4;--white:#fff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",Arial,sans-serif;line-height:1.5}
+button,input{font:inherit}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1120px,calc(100% - 28px));margin:auto}
+.top{background:var(--nav);color:#fff}
+.top .wrap{min-height:66px;display:flex;align-items:center;gap:18px}
+.logo{font-size:22px;font-weight:900;letter-spacing:.02em;white-space:nowrap}
+.logo span{color:var(--orange)}
+.search{flex:1;display:flex;overflow:hidden;border-radius:8px;background:#fff}
+.search input{width:100%;border:0;outline:0;padding:11px 14px;font-size:15px}
+.search button{border:0;background:var(--orange);padding:0 17px;cursor:pointer}
+.line-link{white-space:nowrap;font-size:13px;font-weight:800;color:#fff}
+.nav{background:var(--nav2);color:#fff;font-size:13px}
+.nav .wrap{display:flex;gap:22px;overflow:auto;padding-block:10px}
+.nav a{white-space:nowrap}
+.hero{position:relative;overflow:hidden;background:
+  radial-gradient(circle at 78% 20%,rgba(255,153,0,.42),transparent 28%),
+  linear-gradient(135deg,#182638 0%,#263d58 64%,#172131 100%);color:#fff}
+.hero .wrap{padding:48px 0 44px;display:grid;grid-template-columns:1.3fr .7fr;gap:26px;align-items:center}
+.eyebrow{color:#ffcf70;font-weight:900;font-size:13px;letter-spacing:.12em}
+h1{font-size:clamp(30px,5vw,54px);line-height:1.08;margin:8px 0 14px;letter-spacing:-.035em}
+.lead{max-width:720px;color:#e8edf4;font-size:17px;margin:0}
+.hero-pills{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+.pill{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.08);border-radius:999px;padding:8px 12px;font-size:13px}
+.hero-card{background:#fff;color:var(--ink);border-radius:18px;padding:21px;box-shadow:0 18px 45px rgba(0,0,0,.24)}
+.hero-card strong{font-size:20px}
+.hero-card .price{font-size:34px;font-weight:900;color:var(--red);margin:7px 0}
+.hero-card p{font-size:13px;color:var(--muted);margin:0}
+.hero-card .ez{margin-top:14px;background:#f0f7ff;border-left:4px solid #1c75bc;padding:10px 12px;border-radius:7px;font-size:13px}
+.notice{margin:18px auto 4px;background:#fff8df;border:1px solid #f1d277;border-radius:10px;padding:12px 15px;font-size:13px;color:#5f4b10}
+.section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;padding:31px 2px 14px}
+.section-head h2{margin:0;font-size:25px}
+.section-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.stamp{font-size:12px;color:var(--muted);white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;padding-bottom:34px}
+.product{background:var(--white);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0;box-shadow:0 1px 2px rgba(15,17,17,.04);transition:.18s ease}
+.product:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(15,17,17,.12)}
+.visual{height:168px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:linear-gradient(145deg,var(--tone1),var(--tone2))}
+.visual::after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.22);right:-26px;top:-28px}
+.monogram{width:90px;height:108px;background:rgba(255,255,255,.93);border-radius:20px 20px 14px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 12px 24px rgba(0,0,0,.15);transform:rotate(-3deg);position:relative;z-index:1}
+.monogram.round{width:103px;height:103px;border-radius:52px;transform:rotate(3deg)}
+.monogram.mug{width:105px;height:85px;border-radius:8px 8px 18px 18px}
+.monogram.mug::after{content:"";position:absolute;width:27px;height:42px;border:10px solid rgba(255,255,255,.9);border-left:0;border-radius:0 28px 28px 0;right:-31px}
+.monogram b{font-size:26px;letter-spacing:-.05em}
+.monogram small{font-size:10px;color:#65686d;text-transform:uppercase;letter-spacing:.12em}
+.rank{position:absolute;left:10px;top:10px;background:#fff;color:#111;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900;z-index:2}
+.body{padding:12px 12px 13px;display:flex;flex-direction:column;gap:7px;flex:1}
+.cat{font-size:11px;color:var(--green);font-weight:800}
+.name{font-size:14px;line-height:1.38;font-weight:750;min-height:58px}
+.why{font-size:12px;color:var(--muted);min-height:52px}
+.prices{border-top:1px solid #eee;padding-top:8px}
+.jp{font-size:12px;color:var(--muted)}
+.jp b{color:var(--ink)}
+.landed{font-size:12px;color:var(--muted);margin-top:2px}
+.landed strong{color:var(--red);font-size:20px;display:block;line-height:1.25}
+.delivery{font-size:11px;color:var(--muted)}
+.actions{display:grid;gap:7px;margin-top:auto;padding-top:3px}
+.buy,.proxy{border-radius:999px;padding:9px 9px;text-align:center;font-size:12px;font-weight:850;cursor:pointer;border:1px solid transparent}
+.buy{background:var(--yellow);border-color:var(--yellow2)}
+.buy:hover{background:#f7ca00}
+.proxy{background:#fff;border-color:#888c8c;color:#172131}
+.proxy:hover{background:#f7fafa}
+.how{background:#fff;margin:4px auto 34px;border:1px solid var(--line);border-radius:14px;padding:23px}
+.how h2{margin:0 0 16px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.step{background:#f7f8f8;border-radius:10px;padding:14px}
+.step i{display:block;font-style:normal;font-size:25px}
+.step b{display:block;margin:6px 0 4px}
+.step p{font-size:12px;color:var(--muted);margin:0}
+.disclosure{font-size:12px;color:#5f6368;padding:0 2px 30px}
+footer{background:var(--nav);color:#cbd3dd;text-align:center;padding:25px 14px;font-size:12px}
+.modal{position:fixed;inset:0;background:rgba(15,17,17,.66);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.on{display:flex}
+.dialog{width:min(520px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 22px 60px rgba(0,0,0,.35)}
+.dialog-head{background:var(--nav2);color:#fff;padding:16px 18px;display:flex;justify-content:space-between;gap:10px;align-items:start}
+.dialog-head h3{margin:0;font-size:18px}
+.close{border:0;background:transparent;color:#fff;font-size:24px;cursor:pointer;line-height:1}
+.dialog-body{padding:18px}
+.quote{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+.quote td{padding:7px 0;border-bottom:1px solid #eee}
+.quote td:last-child{text-align:right;font-weight:800}
+.quote .total td{border-top:2px solid var(--nav2);border-bottom:0;font-size:17px;color:var(--red);padding-top:12px}
+.fine{font-size:12px;color:var(--muted)}
+.ack{display:flex;gap:9px;align-items:flex-start;background:#eef7ff;border:1px solid #b7d6ef;border-radius:9px;padding:11px;margin:13px 0;font-size:13px}
+.ack input{margin-top:3px;accent-color:#1677be}
+.line-btn{width:100%;border:0;border-radius:999px;padding:12px;background:#06c755;color:#fff;font-weight:900;cursor:pointer}
+.line-btn:disabled{background:#b9c2c8;cursor:not-allowed}
+.copy-note{text-align:center;font-size:11px;color:var(--muted);margin-top:7px}
+@media(max-width:960px){.grid{grid-template-columns:repeat(3,1fr)}.hero .wrap{grid-template-columns:1fr}.hero-card{max-width:470px}.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){
+  .top .wrap{min-height:auto;padding:10px 0;display:grid;grid-template-columns:1fr auto}.logo{font-size:19px}.line-link{font-size:0}.line-link::after{content:"LINE";font-size:12px}.search{grid-column:1/-1;grid-row:2}
+  .hero .wrap{padding:35px 0}.lead{font-size:15px}.hero-card{display:none}.grid{grid-template-columns:repeat(2,1fr);gap:9px}.visual{height:145px}.body{padding:10px}.name{min-height:64px}.why{min-height:66px}.section-head{align-items:start;flex-direction:column}.stamp{white-space:normal}.steps{grid-template-columns:1fr}.nav .wrap{gap:17px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="wrap">
+      <a class="logo" href="showcase.html">GRAND<span>天倉</span></a>
+      <div class="search">
+        <input id="search" type="search" placeholder="搜尋商品、品牌或用途" aria-label="搜尋推薦商品">
+        <button type="button" onclick="filterProducts()" aria-label="搜尋">🔍</button>
+      </div>
+      <a class="line-link" href="https://line.me/ti/p/~@562spzag" target="_blank" rel="noopener">LINE 詢問代購</a>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="wrap">
+      <a href="#products">台灣人氣精選</a>
+      <a href="#how">怎麼購買</a>
+      <a href="showcase.html">日本代購首頁</a>
+      <a href="https://grand.shop2000.com.tw">GRAND天倉官網</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow">AMAZON JAPAN SELECT</div>
+        <h1>日本熱賣，台灣更好買</h1>
+        <p class="lead">從 Amazon 日本人氣榜與台灣常見需求中，先挑出輕巧、多入組、價差較有機會的 10 件。你可以自己到 Amazon 結帳，也能把報關與物流交給我們。</p>
+        <div class="hero-pills">
+          <span class="pill">✓ 自己買：Amazon 直接結帳</span>
+          <span class="pill">✓ 不會買：GRAND天倉代購</span>
+          <span class="pill">✓ 台灣配送固定 NT$250</span>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <strong>代購價怎麼看？</strong>
+        <div class="price">到台價 ＋ NT$250</div>
+        <p>商品卡上的紅字為「預估到台價」，台灣本島宅配另加 NT$250。Amazon 售價、重量、材積或稅費變動時，以付款前正式報價為準。</p>
+        <div class="ez"><b>EZ WAY 必要</b><br>委託代購須由實際收件人完成實名認證與報關委任。</div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="notice">選品依 Amazon 日本公開暢銷資訊與台灣 2026 日本必買／通路需求資料整理；「人氣精選」不代表台灣全市場銷量排名。Amazon 售價為研究快照，點入後請以 Amazon 當下頁面為準。</div>
+
+    <section id="products">
+      <div class="section-head">
+        <div>
+          <h2>台灣客戶值得先看的 10 件</h2>
+          <p>優先排除低單價又笨重、加完運費就失去優勢的商品。</p>
+        </div>
+        <div class="stamp">價格研究快照：2026-07-28｜試算匯率：JPY × 0.23</div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="how" id="how">
+      <h2>兩種買法，客戶自己選</h2>
+      <div class="steps">
+        <div class="step"><i>🛒</i><b>自己去 Amazon 買</b><p>按黃色按鈕後，由客戶使用自己的 Amazon 帳戶完成結帳；價格與是否直送台灣以 Amazon 顯示為準。</p></div>
+        <div class="step"><i>💬</i><b>委託 GRAND天倉</b><p>按「請我們代購」查看試算，確認 EZ WAY 要求後，把商品與估價資料傳到 LINE。</p></div>
+        <div class="step"><i>🇯🇵</i><b>日本採購與空運</b><p>正式報價確認後才採購。缺貨、價格跳動或禁運品會先通知，不會直接扣款。</p></div>
+        <div class="step"><i>📦</i><b>EZ WAY 委任收貨</b><p>實際收件人完成實名認證與報關委任；到台後安排台灣本島宅配，運費 NT$250。</p></div>
+      </div>
+    </section>
+
+    <p class="disclosure">Amazon 聯盟揭露：GRAND天倉為 Amazon Associate，透過本頁的適格購買可能取得介紹料。自行購買由 Amazon 與客戶直接成立交易；委託代購則由 GRAND天倉另行報價與承接，兩種交易不混用。化妝品等商品僅作一般商品資訊介紹，不構成功效或醫療建議。</p>
+  </div>
+</main>
+
+<footer>Copyright © 2026 GRAND天倉｜日本商品精選・代購空運台灣</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="backdropClose(event)">
+  <div class="dialog">
+    <div class="dialog-head">
+      <h3 id="modalTitle">代購試算</h3>
+      <button type="button" class="close" onclick="closeQuote()" aria-label="關閉">×</button>
+    </div>
+    <div class="dialog-body">
+      <div id="modalName"></div>
+      <table class="quote">
+        <tr><td>Amazon 商品價快照</td><td id="qJpy"></td></tr>
+        <tr><td>商品換算（JPY × 0.23）</td><td id="qGoods"></td></tr>
+        <tr><td>日本入倉／國際空運預估</td><td id="qAir"></td></tr>
+        <tr><td>代購處理費</td><td id="qFee"></td></tr>
+        <tr><td>預估到台價</td><td id="qLanded"></td></tr>
+        <tr><td>台灣本島宅配</td><td>NT$250</td></tr>
+        <tr class="total"><td>預估到手合計</td><td id="qTotal"></td></tr>
+      </table>
+      <p class="fine">此為選品階段估價，不是付款承諾。正式下單前會重新核對 Amazon 當下售價、賣家、庫存、重量／材積、是否可空運及可能稅費。</p>
+      <label class="ack"><input id="ezAck" type="checkbox" onchange="syncQuoteButton()"><span>我知道委託代購時，實際收件人必須使用 EZ WAY 易利委完成實名認證與報關委任。</span></label>
+      <button class="line-btn" id="lineOrder" type="button" disabled onclick="sendLineOrder()">複製商品資料並開啟 LINE</button>
+      <div class="copy-note" id="copyNote">勾選 EZ WAY 說明後即可傳送</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PARTNER_TAG = "tenkura26-22";
+const LINE_URL = "https://line.me/ti/p/~@562spzag";
+const RATE = 0.23;
+const TAIWAN_DELIVERY = 250;
+const FEE = 100;
+
+const products = [
+  {id:"UV3",brand:"Bioré",short:"UV",name:"Bioré UV Aqua Rich 水感防曬精華 100g 多入組",query:"ビオレUV アクアリッチ ウォータリーエッセンス 100g 3個",cat:"Amazon 美妝暢銷",why:"台灣夏季需求穩定；多入組比單支跨境更能分攤運費。",jpy:2800,air:350,t1:"#8ed9ef",t2:"#d8f5ff",shape:""},
+  {id:"MC3",brand:"Melano CC",short:"CC",name:"Melano CC 酵素深層潔面乳 130g 三入組",query:"メラノCC ディープクリア酵素洗顔 130g 3個",cat:"Amazon 美妝人氣",why:"公開榜單長期常見、台灣辨識度高；三入組適合補貨與分攤空運。",jpy:1692,air:400,t1:"#ffcb45",t2:"#fff3b8",shape:""},
+  {id:"FN3",brand:"fino",short:"fino",name:"fino Premium Touch 高效滲透護髮膜 230g 三入組",query:"フィーノ プレミアムタッチ 濃厚美容液ヘアマスク 230g 3個",cat:"台灣高辨識髮品",why:"台灣討論度與回購度高；三罐一起買比單罐代購合理。",jpy:2300,air:550,t1:"#ef3e43",t2:"#ffd3d5",shape:"round"},
+  {id:"LM03",brand:"KATE",short:"KATE",name:"KATE Lip Monster 怪獸級持色唇膏 03 陽炎",query:"KATE リップモンスター 03 陽炎",cat:"Amazon 美妝榜常見",why:"體積小、單價密度高；色號 03 為日本榜單常見選項。",jpy:1360,air:180,t1:"#d8b9ad",t2:"#f5e8e2",shape:""},
+  {id:"CMP",brand:"CANMAKE",short:"CM",name:"CANMAKE Marshmallow Finish Powder 棉花糖蜜粉餅",query:"キャンメイク マシュマロフィニッシュパウダー",cat:"台灣人氣日系彩妝",why:"日本定價透明、重量輕；色號需在正式報價時由客戶確認。",jpy:1034,air:180,t1:"#f2b8d1",t2:"#fff0f6",shape:"round"},
+  {id:"ML25",brand:"ZEBRA",short:"25",name:"ZEBRA Mildliner 柔色螢光筆 25 色套組",query:"ゼブラ マイルドライナー 25色 セット",cat:"文具高效率組合",why:"台灣學生與手帳族熟悉；套組比單支更有日本採購優勢。",jpy:2360,air:300,t1:"#8bd1bd",t2:"#e3faf2",shape:""},
+  {id:"FRX",brand:"PILOT",short:"FRIX",name:"PILOT FRIXION 擦擦筆多色筆＋替芯實用組",query:"パイロット フリクション 4色 替芯 セット",cat:"日本文具人氣",why:"小體積、耗材可回購；以多色筆搭替芯組合提高跨境價值。",jpy:1800,air:220,t1:"#66a7de",t2:"#e0f0ff",shape:""},
+  {id:"SP450",brand:"snow peak",short:"SP",name:"Snow Peak 鈦金屬單層杯 450ml MG-143",query:"スノーピーク チタンシングルマグ 450 MG-143",cat:"露營輕量選品",why:"日本品牌、重量輕且台灣露營族辨識度高；注意單層杯會導熱。",jpy:3300,air:250,t1:"#9ca7ad",t2:"#edf1f3",shape:"mug"},
+  {id:"ZOJ",brand:"ZOJIRUSHI",short:"象印",name:"象印 One-Touch 不鏽鋼保溫杯 600ml 日本款",query:"象印 ステンレスマグ 600ml ワンタッチ",cat:"日系生活用品",why:"日本款色系與型號選擇多；正式報價須確認容量與顏色。",jpy:3000,air:350,t1:"#b4a4dc",t2:"#f0eaff",shape:""},
+  {id:"G5600",brand:"CASIO",short:"G",name:"CASIO G-SHOCK DW-5600UE-1JF 日本內銷款",query:"G-SHOCK DW-5600UE-1JF",cat:"高單價輕量品",why:"小體積可降低物流占比；日本內銷型號需接受日本保固條件。",jpy:12100,air:350,t1:"#232a31",t2:"#66717a",shape:"round"}
+];
+
+let activeProduct = null;
+
+function twd(n){return "NT$"+Math.round(n).toLocaleString("zh-Hant")}
+function jpy(n){return "¥"+Math.round(n).toLocaleString("ja-JP")}
+function landed(p){return Math.round(p.jpy*RATE)+p.air+FEE}
+function amazonUrl(p){return "https://www.amazon.co.jp/s?k="+encodeURIComponent(p.query)+"&tag="+encodeURIComponent(PARTNER_TAG)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function render(list){
+  const grid=document.getElementById("grid");
+  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;background:#fff;border:1px solid #ddd;padding:35px;text-align:center;border-radius:12px">找不到符合的商品</div>';return}
+  grid.innerHTML=list.map((p,i)=>`
+    <article class="product" data-search="${esc((p.brand+" "+p.name+" "+p.cat+" "+p.why).toLowerCase())}">
+      <div class="visual" style="--tone1:${p.t1};--tone2:${p.t2}">
+        <span class="rank">精選 ${String(i+1).padStart(2,"0")}</span>
+        <div class="monogram ${p.shape}"><b>${esc(p.short)}</b><small>${esc(p.brand)}</small></div>
+      </div>
+      <div class="body">
+        <div class="cat">${esc(p.cat)}</div>
+        <div class="name">${esc(p.name)}</div>
+        <div class="why">${esc(p.why)}</div>
+        <div class="prices">
+          <div class="jp">Amazon 價格快照 <b>${jpy(p.jpy)}</b></div>
+          <div class="landed">代購預估到台價<strong>${twd(landed(p))}</strong></div>
+          <div class="delivery">台灣本島宅配另加 NT$${TAIWAN_DELIVERY}</div>
+        </div>
+        <div class="actions">
+          <a class="buy" href="${amazonUrl(p)}" target="_blank" rel="sponsored nofollow noopener">去 Amazon 看目前價格</a>
+          <button class="proxy" type="button" onclick="openQuote('${p.id}')">沒有帳戶／請我們代購</button>
+        </div>
+      </div>
+    </article>`).join("");
+}
+
+function filterProducts(){
+  const q=document.getElementById("search").value.trim().toLowerCase();
+  render(q?products.filter(p=>(p.brand+" "+p.name+" "+p.cat+" "+p.why).toLowerCase().includes(q)):products);
+}
+
+function openQuote(id){
+  activeProduct=products.find(p=>p.id===id);
+  const p=activeProduct,l=landed(p);
+  document.getElementById("modalTitle").textContent="代購試算｜"+p.id;
+  document.getElementById("modalName").innerHTML="<b>"+esc(p.name)+"</b><br><span class='fine'>"+esc(p.why)+"</span>";
+  document.getElementById("qJpy").textContent=jpy(p.jpy);
+  document.getElementById("qGoods").textContent=twd(p.jpy*RATE);
+  document.getElementById("qAir").textContent=twd(p.air);
+  document.getElementById("qFee").textContent=twd(FEE);
+  document.getElementById("qLanded").textContent=twd(l);
+  document.getElementById("qTotal").textContent=twd(l+TAIWAN_DELIVERY);
+  document.getElementById("ezAck").checked=false;
+  syncQuoteButton();
+  document.getElementById("modal").classList.add("on");
+  document.body.style.overflow="hidden";
+}
+function closeQuote(){document.getElementById("modal").classList.remove("on");document.body.style.overflow=""}
+function backdropClose(e){if(e.target.id==="modal")closeQuote()}
+function syncQuoteButton(){
+  const ok=document.getElementById("ezAck").checked;
+  document.getElementById("lineOrder").disabled=!ok;
+  document.getElementById("copyNote").textContent=ok?"會先複製完整估價，再開啟 LINE":"勾選 EZ WAY 說明後即可傳送";
+}
+async function sendLineOrder(){
+  if(!activeProduct)return;
+  const p=activeProduct,l=landed(p);
+  const msg=[
+    "【Amazon 代購詢價】",
+    "商品代碼："+p.id,
+    "商品："+p.name,
+    "Amazon 研究價："+jpy(p.jpy),
+    "預估到台價："+twd(l),
+    "台灣本島宅配：NT$"+TAIWAN_DELIVERY,
+    "預估到手合計："+twd(l+TAIWAN_DELIVERY),
+    "我知道收件人須完成 EZ WAY 實名認證與報關委任。",
+    "請重新核對 Amazon 當下價格、庫存與正式報價。"
+  ].join("\n");
+  try{await navigator.clipboard.writeText(msg);document.getElementById("copyNote").textContent="已複製詢價資料，請貼到 LINE 訊息";}
+  catch(e){document.getElementById("copyNote").textContent="請截圖此試算後傳到 LINE";}
+  window.open(LINE_URL,"_blank","noopener");
+}
+
+document.getElementById("search").addEventListener("input",filterProducts);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeQuote()});
+render(products);
+</script>
+</body>
+</html>
