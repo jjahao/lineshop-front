@@ -147,14 +147,14 @@ footer{background:var(--nav);color:#cbd3dd;text-align:center;padding:25px 14px;f
       <aside class="hero-card">
         <strong>代購價怎麼看？</strong>
         <div class="price">到台價 ＋ NT$250</div>
-        <p>商品卡上的紅字為「預估到台價」，台灣本島宅配另加 NT$250。Amazon 售價、重量、材積或稅費變動時，以付款前正式報價為準。</p>
+        <p>商品卡上的紅字為我們的「預估到台價」，台灣本島宅配另加 NT$250。日本採購價、重量、材積或稅費變動時，以付款前正式報價為準。</p>
         <div class="ez"><b>EZ WAY 必要</b><br>委託代購須由實際收件人完成實名認證與報關委任。</div>
       </aside>
     </div>
   </section>
 
   <div class="wrap">
-    <div class="notice">選品依 Amazon 日本公開暢銷資訊與台灣 2026 日本必買／通路需求資料整理；「人氣精選」不代表台灣全市場銷量排名。Amazon 售價為研究快照，點入後請以 Amazon 當下頁面為準。</div>
+    <div class="notice">選品依 Amazon 日本公開暢銷資訊與台灣 2026 日本必買／通路需求資料整理；「人氣精選」不代表台灣全市場銷量排名。商品卡只顯示我們的代購估價；Amazon 當下售價請點黃色按鈕查看。</div>
 
     <section id="products">
       <div class="section-head">
@@ -192,15 +192,15 @@ footer{background:var(--nav);color:#cbd3dd;text-align:center;padding:25px 14px;f
     <div class="dialog-body">
       <div id="modalName"></div>
       <table class="quote">
-        <tr><td>Amazon 商品價快照</td><td id="qJpy"></td></tr>
-        <tr><td>商品換算（JPY × 0.23）</td><td id="qGoods"></td></tr>
+        <tr><td>日本採購估價基準</td><td id="qJpy"></td></tr>
+        <tr><td>採購估值換算（JPY × 0.23）</td><td id="qGoods"></td></tr>
         <tr><td>日本入倉／國際空運預估</td><td id="qAir"></td></tr>
         <tr><td>代購處理費</td><td id="qFee"></td></tr>
         <tr><td>預估到台價</td><td id="qLanded"></td></tr>
         <tr><td>台灣本島宅配</td><td>NT$250</td></tr>
         <tr class="total"><td>預估到手合計</td><td id="qTotal"></td></tr>
       </table>
-      <p class="fine">此為選品階段估價，不是付款承諾。正式下單前會重新核對 Amazon 當下售價、賣家、庫存、重量／材積、是否可空運及可能稅費。</p>
+      <p class="fine">此為選品階段的代購估價，不是付款承諾。正式下單前會重新核對 Amazon 當下售價、賣家、庫存、重量／材積、是否可空運及可能稅費。</p>
       <label class="ack"><input id="ezAck" type="checkbox" onchange="syncQuoteButton()"><span>我知道委託代購時，實際收件人必須使用 EZ WAY 易利委完成實名認證與報關委任。</span></label>
       <button class="line-btn" id="lineOrder" type="button" disabled onclick="sendLineOrder()">複製商品資料並開啟 LINE</button>
       <div class="copy-note" id="copyNote">勾選 EZ WAY 說明後即可傳送</div>
@@ -250,7 +250,6 @@ function render(list){
         <div class="name">${esc(p.name)}</div>
         <div class="why">${esc(p.why)}</div>
         <div class="prices">
-          <div class="jp">Amazon 價格快照 <b>${jpy(p.jpy)}</b></div>
           <div class="landed">代購預估到台價<strong>${twd(landed(p))}</strong></div>
           <div class="delivery">台灣本島宅配另加 NT$${TAIWAN_DELIVERY}</div>
         </div>
@@ -297,7 +296,7 @@ async function sendLineOrder(){
     "【Amazon 代購詢價】",
     "商品代碼："+p.id,
     "商品："+p.name,
-    "Amazon 研究價："+jpy(p.jpy),
+    "日本採購估價基準："+jpy(p.jpy),
     "預估到台價："+twd(l),
     "台灣本島宅配：NT$"+TAIWAN_DELIVERY,
     "預估到手合計："+twd(l+TAIWAN_DELIVERY),
