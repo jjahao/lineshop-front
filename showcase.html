@@ -83,7 +83,6 @@ footer{background:var(--nav);color:#ddd;text-align:center;font-size:12px;padding
 </div></div>
 
 <div class="subnav"><div class="wrap">
-  <a href="amazon-guide.html">🅰️ Amazon 日本精選</a>
   <a href="#calc">🧮 到手價試算</a>
   <a href="#hot">🔥 熱銷商品</a>
   <a href="luxury.html">💎 精品館</a>
@@ -107,7 +106,7 @@ footer{background:var(--nav);color:#ddd;text-align:center;font-size:12px;padding
   <div class="sec card calc" id="calc">
     <h2>🧮 到手價試算</h2>
     <div class="sub">輸入日幣價格＋重量／長寬高，立刻算出台灣到手價</div>
-    <label>商品連結（選填，方便客服核對商品；價格請直接填在下方）</label>
+    <label>商品連結（選填，樂天／Yahoo 可自動帶入價格）</label>
     <input id="url" placeholder="https://item.rakuten.co.jp/...">
     <div class="row">
       <div><label>商品日幣（税込）</label><input id="jpy" type="number" placeholder="例：3980"></div>
@@ -219,7 +218,7 @@ footer{background:var(--nav);color:#ddd;text-align:center;font-size:12px;padding
 <script>
 /* 報價參數：優先讀 Google Sheet 控制台，讀不到用保底值（保底值須與 Sheet 同值） */
 var CONFIG = {rate:0.23,first:550,next:250,fee:100,divisor:6000,updated:''};
-var CONTROL_URL = "";
+var CONTROL_URL = "https://script.google.com/macros/s/AKfycbzZKE0VolTZ0bP-W6X7niKwAEB1krRZg-pyyMXkXXXCJnkcyAfqzGsAIxEu3a7TbRcO/exec";
 
 function stamp(){
   document.getElementById('rateStamp').textContent =
