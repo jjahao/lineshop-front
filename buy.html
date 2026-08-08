@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GRAND 天倉｜連線選購</title>
+<!-- 這頁刻意不含任何商品或價格。全部等 GAS 驗完會員身分才送過來。 -->
+<style>
+:root{
+  --ink:#1c2b2d; --ink-2:#4a5f5e; --line:#e2dbc7;
+  --paper:#faf6ec; --card:#fff;
+  --green:#0f5c4c; --green-d:#0b473b; --gold:#c8a24b; --yen:#1b4fa0;
+  --shadow:0 1px 2px rgba(28,43,45,.06), 0 10px 24px -14px rgba(28,43,45,.28);
+  --r:2px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ink:#eae5d6; --ink-2:#9aa9a5; --line:#2a3a37;
+    --paper:#0e1614; --card:#16211f;
+    --green:#3f9d84; --green-d:#2f7f6b; --gold:#d8b768; --yen:#7fa9ee;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 26px -16px rgba(0,0,0,.8);
+  }
+}
+*{box-sizing:border-box}
+body,body *{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Hiragino Sans",sans-serif;
+  color:var(--ink); background:var(--paper); -webkit-font-smoothing:antialiased;
+}
+
+/* ── 過場／擋人畫面 ── */
+.gate{
+  min-height:100dvh; display:grid; place-content:center; gap:14px;
+  padding:32px 24px; text-align:center; max-width:460px; margin:auto;
+}
+.gate h1{font-size:17px; font-weight:600; letter-spacing:.02em}
+.gate p{font-size:13.5px; line-height:1.85; color:var(--ink-2)}
+.uid{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px;
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  padding:12px 14px; word-break:break-all; user-select:all; color:var(--ink);
+}
+.gate button{
+  font:inherit; font-size:14.5px; font-weight:600; cursor:pointer;
+  height:44px; padding:0 20px; border-radius:var(--r);
+  border:1px solid var(--green); background:var(--green); color:#fff;
+}
+.peek{
+  width:100%; max-width:300px; margin:0 auto 4px; display:block; border-radius:var(--r);
+  border:1px solid var(--line); box-shadow:var(--shadow);
+}
+.bind{display:grid; gap:9px; text-align:start; margin-block-start:4px}
+.bind label{font-size:12.5px; color:var(--ink-2); letter-spacing:.04em}
+.bind input{
+  font:inherit; font-size:20px; letter-spacing:.34em; text-align:center;
+  font-variant-numeric:tabular-nums; height:50px; border-radius:var(--r);
+  border:1px solid var(--line); background:var(--card); color:var(--ink);
+}
+.bind input:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+.bind input.txt{font-size:16px; letter-spacing:normal; height:46px; text-align:center}
+.err{font-size:12.5px; line-height:1.7; color:#c0392b}
+@media (prefers-color-scheme:dark){ .err{color:#ff8f7a} }
+.joins{display:grid; gap:8px; margin-block-start:6px}
+.sep{font-size:12.5px; color:var(--ink-2); padding-block-start:8px; border-block-start:1px solid var(--line)}
+.j{
+  display:block; text-decoration:none; font-size:14px; font-weight:600;
+  padding:12px 14px; border-radius:var(--r); color:#fff;
+}
+.j.orange{background:#c2521a} .j.blue{background:#1a5fa8} .j.green{background:#2c7a3d}
+
+/* ── 選購畫面 ── */
+.app{
+  height:100dvh; display:none; position:relative; overflow:hidden;
+  grid-template-rows:auto auto minmax(0,1fr) auto auto;
+}
+.app[data-on]{display:grid}
+.rail{
+  position:absolute; inset-block:0; inset-inline-start:0; width:24px; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+  writing-mode:vertical-rl; text-orientation:mixed;
+  font-size:10px; letter-spacing:.4em; color:var(--gold);
+  border-inline-end:1px solid var(--line); background:var(--card); pointer-events:none;
+}
+.topbar,.modebar,.dots,.cartbar,.deck{margin-inline-start:24px}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:calc(env(safe-area-inset-top) + 9px) 14px 9px;
+  border-block-end:1px solid var(--line); background:var(--card);
+}
+.who{font-size:10.5px; letter-spacing:.1em; color:var(--green);
+  border:1px solid currentColor; border-radius:999px; padding:3px 9px; white-space:nowrap}
+.count{font-size:11.5px; color:var(--ink-2); font-variant-numeric:tabular-nums}
+.count b{font-size:16px; color:var(--ink); font-weight:600}
+.modebar{
+  display:flex; align-items:center; gap:8px; padding:8px 14px;
+  border-block-end:1px solid var(--line); background:var(--card);
+}
+.modebar>span{font-size:11px; color:var(--ink-2); letter-spacing:.1em}
+/* 分類列（ISSUE-100 入口常駐化）：橫向捲，最新一批釘在最前面 */
+.catbar{
+  display:flex; gap:6px; padding:8px 14px; overflow-x:auto; scrollbar-width:none;
+  border-block-end:1px solid var(--line); background:var(--card);
+  margin-inline-start:24px; -webkit-overflow-scrolling:touch;
+}
+.catbar::-webkit-scrollbar{display:none}
+.catbar button{
+  font:inherit; font-size:12.5px; cursor:pointer; white-space:nowrap; flex:0 0 auto;
+  height:30px; padding:0 12px; border:1px solid var(--line); border-radius:999px;
+  background:transparent; color:var(--ink-2); -webkit-tap-highlight-color:transparent;
+}
+.catbar button[aria-pressed="true"]{background:var(--green); color:#fff; border-color:var(--green); font-weight:600}
+.catbar button i{font-style:normal; opacity:.65; margin-inline-start:4px; font-size:11px}
+.catbar .new::before{content:"NEW"; font-size:9px; font-weight:700; letter-spacing:.06em;
+  background:var(--green); color:#fff; border-radius:3px; padding:1px 3px; margin-inline-end:5px}
+.catbar .new[aria-pressed="true"]::before{background:#fff; color:var(--green)}
+.seg{display:flex; border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
+.seg button{
+  font:inherit; font-size:12.5px; cursor:pointer; min-width:42px; height:30px;
+  border:0; border-inline-start:1px solid var(--line); background:transparent;
+  color:var(--ink-2); -webkit-tap-highlight-color:transparent;
+}
+.seg button:first-child{border-inline-start:0}
+.seg button[aria-pressed="true"]{background:var(--green); color:#fff; font-weight:600}
+.deck{
+  display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory;
+  scroll-behavior:smooth; scrollbar-width:none; overscroll-behavior-x:contain;
+}
+.deck::-webkit-scrollbar{display:none}
+@media (prefers-reduced-motion:reduce){ .deck{scroll-behavior:auto} }
+.page{flex:0 0 100%; scroll-snap-align:center; scroll-snap-stop:always;
+  min-width:0; display:grid; gap:8px; padding:10px 14px 6px}
+.app[data-cols="1"] .page{grid-template-columns:1fr; grid-template-rows:1fr}
+.app[data-cols="2"] .page{grid-template-columns:1fr; grid-template-rows:1fr 1fr}
+.app[data-cols="4"] .page{grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr}
+.app[data-cols="6"] .page{grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr 1fr}
+.tile{min-width:0; min-height:0; display:grid; grid-template-rows:minmax(0,1fr) auto; gap:7px}
+.shot{
+  min-height:0; display:flex; align-items:center; justify-content:center; position:relative;
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:8px;
+}
+.shot::before{content:""; position:absolute; inset-block-start:6px; inset-inline-start:50%;
+  width:18px; height:2px; transform:translateX(-50%); background:var(--gold); opacity:.5}
+.shot img{max-width:100%; max-height:100%; object-fit:contain; display:block}
+.tile.in .shot{outline:2px solid var(--gold); outline-offset:-1px}
+.meta{display:grid; gap:5px; min-width:0}
+.name{font-weight:600; line-height:1.45; overflow:hidden;
+  display:-webkit-box; -webkit-box-orient:vertical}
+.prices{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; min-width:0}
+.yen{font-weight:700; letter-spacing:-.02em; line-height:1; color:var(--yen);
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.yen i{font-style:normal; margin-inline-end:1px}
+.twd{color:var(--ink-2); font-variant-numeric:tabular-nums; white-space:nowrap}
+.qtyrow{display:flex; align-items:center; gap:8px}
+.step,.add{font:inherit; cursor:pointer; border-radius:var(--r);
+  border:1px solid var(--line); background:var(--card); color:var(--ink);
+  -webkit-tap-highlight-color:transparent}
+.step:active{background:var(--paper)}
+.qty{text-align:center; font-weight:600; font-variant-numeric:tabular-nums}
+.add{margin-inline-start:auto; background:var(--green); border-color:var(--green);
+  color:#fff; font-weight:600; letter-spacing:.05em; white-space:nowrap}
+.tile.in .add{background:var(--gold); border-color:var(--gold); color:#231c08}
+:where(.step,.add,.submit,.seg button,.gate button):focus-visible{
+  outline:2px solid var(--gold); outline-offset:2px}
+.app[data-cols="1"] .name{font-size:15px; -webkit-line-clamp:2}
+.app[data-cols="1"] .yen{font-size:29px} .app[data-cols="1"] .yen i{font-size:18px}
+.app[data-cols="1"] .twd{font-size:13.5px}
+.app[data-cols="1"] .step{width:44px; height:44px; font-size:20px}
+.app[data-cols="1"] .qty{min-width:32px; font-size:18px}
+.app[data-cols="1"] .add{height:44px; padding:0 22px; font-size:15px}
+.app[data-cols="2"] .name{font-size:14px; -webkit-line-clamp:2}
+.app[data-cols="2"] .yen{font-size:22px} .app[data-cols="2"] .yen i{font-size:14px}
+.app[data-cols="2"] .twd{font-size:12.5px}
+.app[data-cols="2"] .step{width:40px; height:40px; font-size:19px}
+.app[data-cols="2"] .qty{min-width:28px; font-size:17px}
+.app[data-cols="2"] .add{height:40px; padding:0 18px; font-size:14px}
+.app[data-cols="4"] .name{font-size:12.5px; -webkit-line-clamp:2}
+.app[data-cols="4"] .yen{font-size:17px} .app[data-cols="4"] .yen i{font-size:12px}
+.app[data-cols="4"] .twd{font-size:11px}
+.app[data-cols="4"] .step{width:34px; height:34px; font-size:17px}
+.app[data-cols="4"] .qty{min-width:20px; font-size:15px}
+.app[data-cols="6"] .name{font-size:11.5px; -webkit-line-clamp:1; line-height:1.35}
+.app[data-cols="6"] .yen{font-size:15px} .app[data-cols="6"] .yen i{font-size:11px}
+.app[data-cols="6"] .twd{font-size:10.5px}
+.app[data-cols="6"] .meta{gap:3px} .app[data-cols="6"] .tile{gap:5px}
+.app[data-cols="6"] .step{width:30px; height:30px; font-size:16px}
+.app[data-cols="6"] .qty{min-width:18px; font-size:13.5px}
+.app[data-cols="6"] .step[data-act="dec"]{display:none}
+.app[data-cols="6"] .tile:not(.in) .qty{display:none}
+.app[data-cols="4"] .add,.app[data-cols="6"] .add{display:none}
+.app[data-cols="4"] .qtyrow,.app[data-cols="6"] .qtyrow{justify-content:flex-end}
+.app[data-cols="4"] .step[data-act="inc"],.app[data-cols="6"] .step[data-act="inc"]{
+  background:var(--green); border-color:var(--green); color:#fff; font-weight:600}
+.dots{display:flex; gap:5px; justify-content:center; padding:8px 14px 3px; flex-wrap:wrap}
+.dot{width:5px; height:5px; border-radius:50%; background:var(--line); transition:.2s}
+.dot[data-on]{background:var(--gold); transform:scale(1.5)}
+@media (prefers-reduced-motion:reduce){ .dot{transition:none} }
+.cartbar{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 14px calc(env(safe-area-inset-bottom) + 9px);
+  border-block-start:1px solid var(--line); background:var(--card);
+}
+.sum{font-size:12.5px; color:var(--ink-2); font-variant-numeric:tabular-nums}
+.sum b{color:var(--ink); font-size:15.5px; font-weight:600}
+.submit{margin-inline-start:auto; font:inherit; cursor:pointer; height:42px; padding:0 18px;
+  border-radius:var(--r); border:1px solid var(--green); background:var(--green);
+  color:#fff; font-size:14.5px; font-weight:600; letter-spacing:.05em}
+.submit[disabled]{opacity:.4; cursor:default}
+.sheet{position:fixed; inset:0; z-index:9; display:none; align-items:flex-end;
+  justify-content:center; background:rgba(12,20,19,.55)}
+.sheet[data-open]{display:flex}
+.sheet-in{width:100%; max-width:520px; background:var(--card); color:var(--ink);
+  border-start-start-radius:12px; border-start-end-radius:12px;
+  padding:18px 18px calc(env(safe-area-inset-bottom) + 18px);
+  display:grid; gap:11px; max-height:82dvh; overflow-y:auto}
+.sheet h3{font-size:16px; font-weight:600}
+.sheet ul{list-style:none; display:grid; gap:6px}
+.sheet li{display:flex; justify-content:space-between; gap:10px; font-size:12.5px;
+  padding-block-end:6px; border-block-end:1px solid var(--line)}
+.sheet li span:last-child{font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--ink-2)}
+.note{font-size:11.5px; line-height:1.7; color:var(--ink-2);
+  border-inline-start:2px solid var(--gold); padding-inline-start:10px}
+.row{display:flex; gap:8px}
+.row button{flex:1; font:inherit; cursor:pointer; height:42px; border-radius:var(--r)}
+.ghost{border:1px solid var(--line); background:transparent; color:var(--ink)}
+.go{border:1px solid var(--green); background:var(--green); color:#fff; font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <img class="peek" id="peek" alt="本次連線商品預覽" hidden>
+  <h1 id="gtitle">連線中…</h1>
+  <p id="gmsg">正在確認你的會員身分</p>
+
+  <!-- 未綁定：先用手機後五碼認人（名單裡本來就有這欄，認到就自動綁定） -->
+  <div class="bind" id="bind" hidden>
+    <label for="tag">手機後五碼＋姓名一個字</label>
+    <input id="tag" class="txt" autocomplete="off" maxlength="12" placeholder="12345王">
+    <button class="go" id="bindgo">確認身分</button>
+    <p class="err" id="binderr" hidden></p>
+  </div>
+
+  <!-- 還不是客戶：走既有的加入會員／會員登入／加 LINE 三條路 -->
+  <div class="joins" id="joins" hidden>
+    <p class="sep">還不是 GRAND 的客戶？</p>
+    <a class="j orange" id="jmember">➕ 加入會員</a>
+    <a class="j blue" id="jlogin">👤 會員登入</a>
+    <a class="j green" id="jline">💬 加 LINE 官方帳號 @562spzag</a>
+  </div>
+
+  <div class="uid" id="guid" hidden></div>
+  <button id="gbtn" hidden></button>
+</div>
+
+<div class="app" id="app" data-cols="4">
+  <div class="rail" id="rail"></div>
+  <header class="topbar">
+    <span class="who" id="who"></span>
+    <span class="count">第 <b id="idx">1</b> / <span id="pages">1</span> 頁　共 <span id="total">0</span> 件</span>
+  </header>
+  <div class="modebar">
+    <span>一次看</span>
+    <div class="seg" id="seg">
+      <button data-n="1">1 格</button><button data-n="2">2 格</button>
+      <button data-n="4" aria-pressed="true">4 格</button><button data-n="6">6 格</button>
+    </div>
+  </div>
+  <nav class="catbar" id="catbar" hidden aria-label="分類"></nav>
+  <div class="deck" id="deck"></div>
+  <div class="dots" id="dots"></div>
+  <footer class="cartbar">
+    <span class="sum">共 <b id="cnt">0</b> 件　NT$<b id="tot">0</b></span>
+    <button class="submit" id="submit" disabled>送出訂單</button>
+  </footer>
+</div>
+
+<div class="sheet" id="sheet">
+  <div class="sheet-in">
+    <h3 id="stitle">訂單確認</h3>
+    <ul id="slist"></ul>
+    <p class="sum">合計 <b id="stot">NT$0</b></p>
+    <p class="note" id="snote">送出後由 GRAND 依「先送單先得」處理，實際能不能買到以買手現場回報為準。</p>
+    <div class="row">
+      <button class="ghost" id="sback">再看看</button>
+      <button class="go" id="sgo">確認送出</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+(function () {
+  var LIFF_ID = '2001822945-yIeUE9q4';
+  var GAS = 'https://silent-unit-718clineshop-proxy.jjahao.workers.dev';
+
+  var params = new URLSearchParams(location.search);
+  // 深連結（ISSUE-096）：?cat=<分類> 直接開到那一批。
+  // 不帶 cat＝伺服器端給「最新一批」（ISSUE-100 置頂用固定網址走這條）。
+  // ?all=1 ＝倒整本目錄。
+  var CAT = params.get('cat') || '';
+  var ALL = params.get('all') === '1';
+
+  var gate = document.getElementById('gate');
+  var app = document.getElementById('app');
+  var deck = document.getElementById('deck'), dotsEl = document.getElementById('dots');
+  var idxEl = document.getElementById('idx'), pagesEl = document.getElementById('pages');
+  var cntEl = document.getElementById('cnt'), totEl = document.getElementById('tot');
+  var submit = document.getElementById('submit'), sheet = document.getElementById('sheet');
+  var seg = document.getElementById('seg');
+  var P = [], cart = new Map(), io = null, idToken = '', liffName = '';
+
+  function say(title, msg, uid, btnText, onBtn) {
+    document.getElementById('gtitle').textContent = title;
+    document.getElementById('gmsg').textContent = msg;
+    var u = document.getElementById('guid');
+    u.hidden = !uid; if (uid) u.textContent = uid;
+    var b = document.getElementById('gbtn');
+    b.hidden = !btnText; if (btnText) { b.textContent = btnText; b.onclick = onBtn; }
+    gate.style.display = 'grid'; app.removeAttribute('data-on');
+  }
+  function money(n) { return n.toLocaleString('en-US'); }
+
+  /* ---------- 未綁定：先給看本次連線的四格預覽，再認人 ---------- */
+  function askLast5(userId) {
+    var card = params.get('card');   // ISSUE-098 短網址帶過來的四格預覽圖
+    if (card && /^https:\/\//.test(card)) {
+      var pk = document.getElementById('peek');
+      pk.src = card; pk.hidden = false;
+    }
+    say('這批連線商品限會員選購',
+        '照你的暱稱格式輸入：手機後五碼＋姓名一個字，例如 12345王。確認一次就好，之後不用再輸入。');
+    document.getElementById('bind').hidden = false;
+    document.getElementById('joins').hidden = false;
+    document.getElementById('jmember').href = 'https://grand.shop2000.com.tw/member';
+    document.getElementById('jlogin').href =
+      'https://grand.shop2000.com.tw/shop2000_prog/member/mem_login_pop.aspx?vdir=grand';
+    document.getElementById('jline').href = 'https://line.me/ti/p/~@562spzag';
+
+    var input = document.getElementById('tag');
+    var errEl = document.getElementById('binderr');
+    var btn = document.getElementById('bindgo');
+    function fail(msg) { errEl.hidden = false; errEl.textContent = msg; btn.disabled = false; btn.textContent = '確認身分'; }
+    var MSG = {
+      NO_MATCH: '名單裡查不到這組手機後五碼。如果你是新客戶，請先從下面加入會員；已經是客戶就加 LINE 找小編。',
+      NEED_NAME: '有多位客戶的手機後五碼相同，請照暱稱格式補上姓名的一個字，例如 12345王。',
+      NAME_MISMATCH: '後五碼和這個字對不起來，請確認和當初註冊的姓名一致，或加 LINE 找小編。',
+      // 同後五碼又同姓 —— 不自動綁，交給小編，寧可讓人等也不能綁到別人帳上
+      NEED_HUMAN: '你的後五碼和姓氏跟另一位客戶一樣，為了不綁錯人，這筆要請小編確認。已經幫你留單，加 LINE 跟小編說一聲就好。',
+      ALREADY_BOUND: '這個帳號已經綁在另一個 LINE 上了，請加 LINE 找小編處理。',
+      SUSPENDED: '這個帳號目前停用中，請加 LINE 找小編。',
+      BAD_LAST5: '請輸入手機後五碼＋姓名一個字，例如 12345王。'
+    };
+
+    function send(tag, onFail) {
+      return fetch(GAS, {
+        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'bind', id_token: idToken, tag: tag })
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (res.ok) { location.reload(); return true; }
+        if (onFail) onFail(res.error);
+        return false;
+      });
+    }
+
+    btn.onclick = function () {
+      var v = (input.value || '').trim();
+      errEl.hidden = true;
+      if ((v.replace(/\D/g, '')).length < 5) { fail(MSG.BAD_LAST5); return; }
+      btn.disabled = true; btn.textContent = '確認中…';
+      send(v, function (err) { fail(MSG[err] || ('確認失敗（' + err + '），請再試一次。')); })
+        .catch(function () { fail('連線失敗，請再試一次。'); });
+    };
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') btn.click(); });
+
+    // 客戶的 LINE 暱稱本來就規定是「五碼＋一個字」＝多數人一個字都不用打。
+    // 靜靜試一次，成功就直接進站；失敗就照常顯示表單，不干擾也不報錯。
+    var nick = (liffName || '').trim();
+    if (/\d{5}/.test(nick) && /[一-鿿]/.test(nick)) {
+      input.value = nick;
+      send(nick, function () { input.value = nick; }).catch(function () {});
+    }
+  }
+
+  /* ---------- 跟 GAS 要商品（切分類也走這支，不重新載入整頁） ---------- */
+  function askProducts(cat, all) {
+    return fetch(GAS + '?view=liff_products' +
+                 '&cat=' + encodeURIComponent(cat || '') +
+                 (all ? '&all=1' : '') +
+                 '&id_token=' + encodeURIComponent(idToken))
+      .then(function (r) { return r.json(); });
+  }
+
+  /* ---------- 啟動：LIFF 登入 → 拿 ID Token → 跟 GAS 換商品 ---------- */
+  liff.init({ liffId: LIFF_ID })
+    .then(function () {
+      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return null; }
+      idToken = liff.getIDToken();
+      if (!idToken) throw new Error('NO_ID_TOKEN');
+      return askProducts(CAT, ALL);
+    })
+    .then(function (res) {
+      if (!res) return;
+      if (res.ok) return start(res);
+      if (res.error === 'NOT_MEMBER') { liffName = res.line_name || ''; askLast5(res.user_id); return; }
+      say('身分驗證沒過', '請關掉本頁，從 LINE 裡的連結重新進來一次。');
+    })
+    .catch(function (err) {
+      say('打不開', '請從 LINE 裡的連結進入本頁。（' + (err && err.message ? err.message : err) + '）');
+    });
+
+  /* ---------- 選購 ---------- */
+  var CATS = [], curCat = '', curAll = false;
+
+  function start(res) {
+    CATS = res.categories || [];
+    curCat = res.category || '';
+    curAll = !!res.all;
+    P = res.products || [];
+
+    // 價別寫在畫面上，客戶和小編都一眼看得出這頁是哪一種價（伺服器端決定的，不是前端挑的）
+    document.getElementById('who').textContent =
+      (res.tier === 'list' ? '一般價　' : '會員價　') + (res.member || '');
+    // 側邊直排標題：最新一批就標「最新一批」，讓客戶一眼知道這是今天的貨
+    document.getElementById('rail').textContent =
+      curAll ? 'GRAND 全部連線' : ((res.is_latest ? '最新一批　' : '') + (curCat || 'GRAND 連線'));
+    document.getElementById('total').textContent = P.length;
+
+    renderCats();
+
+    // 連結帶的分類已整批下架／打錯字：不要給空白頁，講清楚並停在最新一批
+    if (res.missing) {
+      say('「' + res.missing + '」這批已經收單了',
+          '幫你換成最新一批。舊的連線收掉後就看不到了，下次直接點置頂的連結最準。',
+          '', '看最新一批', function () { gate.style.display = 'none'; });
+    }
+    if (!P.length) {
+      say('這個分類目前沒有商品', '等買手上架後再回來看看。',
+          '', CATS.length ? '看最新一批' : '', CATS.length ? function () { switchCat(CATS[0].name); } : null);
+      return;
+    }
+    if (!res.missing) gate.style.display = 'none';
+    app.setAttribute('data-on', '');
+    var saved = 0; try { saved = Number(localStorage.getItem('gp_cols')) || 0; } catch (e) {}
+    pick([1, 2, 4, 6].indexOf(saved) > -1 ? saved : 4, false);
+    renderCart();
+  }
+
+  /* ---------- 分類列：最新一批釘最前面、標 NEW ---------- */
+  function renderCats() {
+    var bar = document.getElementById('catbar');
+    bar.textContent = '';
+    if (CATS.length < 2) { bar.hidden = true; return; }   // 只有一批就不佔畫面
+    bar.hidden = false;
+    CATS.forEach(function (c, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      if (i === 0) b.className = 'new';                    // 最新一批
+      b.appendChild(document.createTextNode(c.name));
+      var n = document.createElement('i');
+      n.textContent = c.count;
+      b.appendChild(n);
+      if (!curAll && c.name === curCat) b.setAttribute('aria-pressed', 'true');
+      b.onclick = function () { switchCat(c.name); };
+      bar.appendChild(b);
+    });
+  }
+
+  // 切分類不重新載入整頁，購物車也留著 —— 客戶可以跨批一次下單
+  function switchCat(cat) {
+    if (cat === curCat && !curAll) return;
+    var bar = document.getElementById('catbar');
+    Array.prototype.forEach.call(bar.children, function (b) { b.disabled = true; });
+    askProducts(cat, false)
+      .then(function (res) {
+        if (res && res.ok) { start(res); return; }
+        say('讀不到這個分類', '請從 LINE 裡的連結重新進來一次。');
+      })
+      .catch(function () {
+        Array.prototype.forEach.call(bar.children, function (b) { b.disabled = false; });
+      });
+  }
+
+  function tile(p) {
+    var el = document.createElement('div');
+    el.className = 'tile'; el.dataset.id = p.id;
+    var q = cart.get(p.id) || 0;
+    if (q > 0) el.classList.add('in');
+    el.innerHTML =
+      '<figure class="shot"><img loading="lazy" decoding="async"></figure>' +
+      '<div class="meta"><h2 class="name"></h2>' +
+      '<p class="prices"><span class="yen"><i>&yen;</i></span><span class="twd"></span></p>' +
+      '<div class="qtyrow">' +
+        '<button class="step" data-act="dec" aria-label="減少數量">&minus;</button>' +
+        '<output class="qty" data-qty></output>' +
+        '<button class="step" data-act="inc" aria-label="增加數量">+</button>' +
+        '<button class="add" data-act="add">加入</button>' +
+      '</div></div>';
+    var img = el.querySelector('img');
+    img.src = p.img; img.alt = p.name;
+    el.querySelector('.name').textContent = p.name;
+    el.querySelector('.yen').insertAdjacentText('beforeend', money(p.jpy));
+    el.querySelector('.twd').textContent = 'NT$' + money(p.twd);
+    el.querySelector('[data-qty]').textContent = q;
+    return el;
+  }
+
+  function layout(n) {
+    app.dataset.cols = n;
+    deck.innerHTML = ''; dotsEl.innerHTML = '';
+    if (io) io.disconnect();
+    var pages = Math.ceil(P.length / n);
+    for (var i = 0; i < pages; i++) {
+      var pg = document.createElement('section'); pg.className = 'page';
+      P.slice(i * n, i * n + n).forEach(function (p) { pg.appendChild(tile(p)); });
+      deck.appendChild(pg);
+      var d = document.createElement('span'); d.className = 'dot';
+      if (i === 0) d.setAttribute('data-on', '');
+      dotsEl.appendChild(d);
+    }
+    pagesEl.textContent = pages; idxEl.textContent = 1;
+    var dots = [].slice.call(dotsEl.children), secs = [].slice.call(deck.children);
+    io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var i = secs.indexOf(en.target);
+        idxEl.textContent = i + 1;
+        dots.forEach(function (d, j) {
+          if (j === i) d.setAttribute('data-on', ''); else d.removeAttribute('data-on');
+        });
+      });
+    }, { root: deck, threshold: 0.6 });
+    secs.forEach(function (s) { io.observe(s); });
+  }
+
+  function pick(n, remember) {
+    [].forEach.call(seg.children, function (x) {
+      x.setAttribute('aria-pressed', String(Number(x.dataset.n) === n));
+    });
+    layout(n);
+    if (remember) { try { localStorage.setItem('gp_cols', n); } catch (e) {} }
+  }
+  seg.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-n]');
+    if (b) pick(Number(b.dataset.n), true);
+  });
+
+  function renderCart() {
+    var n = 0, sum = 0;
+    cart.forEach(function (q, id) {
+      var p = P.find(function (x) { return x.id === id; });
+      if (!p) return;
+      n += q; sum += q * p.twd;
+    });
+    cntEl.textContent = n; totEl.textContent = money(sum);
+    submit.disabled = n === 0;
+  }
+  function setQty(el, q) {
+    q = Math.max(0, Math.min(99, q));
+    el.querySelector('[data-qty]').textContent = q;
+    el.classList.toggle('in', q > 0);
+    if (q > 0) cart.set(el.dataset.id, q); else cart.delete(el.dataset.id);
+    renderCart();
+  }
+  deck.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    var el = btn.closest('.tile');
+    var q = Number(el.querySelector('[data-qty]').textContent), a = btn.dataset.act;
+    if (a === 'inc') setQty(el, q + 1);
+    else if (a === 'dec') setQty(el, q - 1);
+    else if (a === 'add') setQty(el, q === 0 ? 1 : q);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var i = Number(idxEl.textContent) - 1 + (e.key === 'ArrowRight' ? 1 : -1);
+    if (deck.children[i]) deck.children[i].scrollIntoView({ inline: 'center', block: 'nearest' });
+  });
+
+  /* ---------- 送單 ---------- */
+  submit.addEventListener('click', function () {
+    var list = document.getElementById('slist'), sum = 0;
+    list.innerHTML = '';
+    cart.forEach(function (q, id) {
+      var p = P.find(function (x) { return x.id === id; });
+      if (!p) return;
+      var line = q * p.twd; sum += line;
+      var li = document.createElement('li');
+      var a = document.createElement('span'); a.textContent = p.name;
+      var b = document.createElement('span');
+      b.textContent = '× ' + q + '　NT$' + money(line);
+      li.appendChild(a); li.appendChild(b); list.appendChild(li);
+    });
+    document.getElementById('stot').textContent = 'NT$' + money(sum);
+    sheet.setAttribute('data-open', '');
+  });
+  document.getElementById('sback').onclick = function () { sheet.removeAttribute('data-open'); };
+  document.getElementById('sgo').onclick = function () {
+    var btn = this; btn.disabled = true; btn.textContent = '送出中…';
+    var items = [];
+    cart.forEach(function (q, id) { items.push({ id: id, qty: q }); });
+    fetch(GAS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },  // 避開 preflight
+      body: JSON.stringify({ id_token: idToken, batch_id: 'liff', items: items })
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'FAIL');
+      document.getElementById('stitle').textContent = '收到了，訂單已送出';
+      document.getElementById('slist').innerHTML = '';
+      document.getElementById('snote').textContent =
+        '訂單編號 ' + res.order_id + '。買手會依「先送單先得」處理，缺貨會另行通知。';
+      btn.textContent = '完成'; btn.disabled = false;
+      btn.onclick = function () { location.reload(); };
+      document.getElementById('sback').hidden = true;
+      cart.clear(); renderCart();
+    }).catch(function (err) {
+      btn.disabled = false; btn.textContent = '再送一次';
+      document.getElementById('snote').textContent =
+        '沒送出去：' + (err && err.message ? err.message : err) + '。可以再按一次。';
+    });
+  };
+})();
+</script>
+</body>
+</html>
