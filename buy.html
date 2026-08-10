@@ -164,7 +164,16 @@ body{
   border:1px solid var(--line); background:var(--card); color:var(--ink);
   -webkit-tap-highlight-color:transparent}
 .step:active{background:var(--paper)}
-.qty{text-align:center; font-weight:600; font-variant-numeric:tabular-nums}
+.qty{
+  text-align:center; font-weight:600; font-variant-numeric:tabular-nums;
+  font:inherit; border:0; background:transparent; color:inherit; padding:0;
+  -moz-appearance:textfield;
+}
+.qty::-webkit-outer-spin-button,.qty::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+.qty:focus{outline:2px solid var(--gold); outline-offset:2px; border-radius:6px}
+/* 🔴 連按「＋」會被 iOS 當成雙擊縮放整頁（2026-08-10 James 回報）。
+   touch-action:manipulation 就是拿掉那 300ms 的雙擊判定，按多快都不會放大。*/
+:where(.step,.add,.qty,.seg button,.catbar button,.submit,.gate button){touch-action:manipulation}
 .add{margin-inline-start:auto; background:var(--green); border-color:var(--green);
   color:#fff; font-weight:600; letter-spacing:.05em; white-space:nowrap}
 .tile.in .add{background:var(--gold); border-color:var(--gold); color:#231c08}
@@ -360,14 +369,26 @@ body{
       BAD_LAST5: '請輸入手機後五碼＋姓名一個字，例如 12345王。'
     };
 
+    /**
+     * 認人。
+     * 🔴 認過就**直接把商品載進來**，不要 `location.reload()`（2026-08-10 James 回報
+     *    「按確認會員轉太久，會以為壞掉直接關掉」）。整頁重載＝LIFF SDK 重新初始化
+     *    ＋再跑一次登入流程，等於白白多等一輪，是最慢的一段。
+     */
     function send(tag, onFail) {
       return fetch(GAS, {
         method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'bind', id_token: idToken, tag: tag })
       }).then(function (r) { return r.json(); }).then(function (res) {
-        if (res.ok) { location.reload(); return true; }
-        if (onFail) onFail(res.error);
-        return false;
+        if (!res.ok) { if (onFail) onFail(res.error); return false; }
+        say('認出你了，' + (res.member || '') + '　正在載入商品…', '第一次要等一下，之後直接進站。');
+        document.getElementById('bind').hidden = true;
+        document.getElementById('joins').hidden = true;
+        return askProducts(CAT, ALL).then(function (p) {
+          if (p && p.ok) { start(p); return true; }
+          location.reload();                       // 極少數情況才退回重載
+          return true;
+        });
       });
     }
 
@@ -375,7 +396,9 @@ body{
       var v = (input.value || '').trim();
       errEl.hidden = true;
       if ((v.replace(/\D/g, '')).length < 5) { fail(MSG.BAD_LAST5); return; }
-      btn.disabled = true; btn.textContent = '確認中…';
+      btn.disabled = true; btn.textContent = '確認中…請稍候';
+      // 講清楚在等什麼、要等多久，客戶才不會以為當掉直接關掉
+      document.getElementById('gmsg').textContent = '正在核對會員名單，大約 5～10 秒，請不要關閉。';
       send(v, function (err) { fail(MSG[err] || ('確認失敗（' + err + '），請再試一次。')); })
         .catch(function () { fail('連線失敗，請再試一次。'); });
     };
@@ -515,7 +538,9 @@ body{
       '<p class="prices"><span class="yen"><i>&yen;</i></span><span class="twd"></span></p>' +
       '<div class="qtyrow">' +
         '<button class="step" data-act="dec" aria-label="減少數量">&minus;</button>' +
-        '<output class="qty" data-qty></output>' +
+        // 可直接點數字用鍵盤打（James：也要能手動填錄）
+        '<input class="qty" data-qty type="number" inputmode="numeric" ' +
+          'min="0" max="99" step="1" aria-label="數量">' +
         '<button class="step" data-act="inc" aria-label="增加數量">+</button>' +
         '<button class="add" data-act="add">加入</button>' +
       '</div></div>';
@@ -524,7 +549,7 @@ body{
     el.querySelector('.name').textContent = p.name;
     el.querySelector('.yen').insertAdjacentText('beforeend', money(p.jpy));
     el.querySelector('.twd').textContent = 'NT$' + money(p.twd);
-    el.querySelector('[data-qty]').textContent = q;
+    el.querySelector('[data-qty]').value = q;
     return el;
   }
 
@@ -580,7 +605,7 @@ body{
   }
   function setQty(el, q) {
     q = Math.max(0, Math.min(99, q));
-    el.querySelector('[data-qty]').textContent = q;
+    el.querySelector('[data-qty]').value = q;
     el.classList.toggle('in', q > 0);
     if (q > 0) cart.set(el.dataset.id, q); else cart.delete(el.dataset.id);
     renderCart();
@@ -589,11 +614,27 @@ body{
     var btn = e.target.closest('[data-act]');
     if (!btn) return;
     var el = btn.closest('.tile');
-    var q = Number(el.querySelector('[data-qty]').textContent), a = btn.dataset.act;
+    var q = Number(el.querySelector('[data-qty]').value) || 0, a = btn.dataset.act;
     if (a === 'inc') setQty(el, q + 1);
     else if (a === 'dec') setQty(el, q - 1);
     else if (a === 'add') setQty(el, q === 0 ? 1 : q);
   });
+  // 直接打數字也算數（James：也要能手動填錄）。打完離開欄位就進購物車。
+  deck.addEventListener('input', function (e) {
+    if (!e.target.matches('[data-qty]')) return;
+    var el = e.target.closest('.tile');
+    var q = Math.max(0, Math.min(99, Number(e.target.value) || 0));
+    el.classList.toggle('in', q > 0);
+    if (q > 0) cart.set(el.dataset.id, q); else cart.delete(el.dataset.id);
+    renderCart();
+  });
+  deck.addEventListener('focusin', function (e) {
+    if (e.target.matches('[data-qty]')) e.target.select();   // 點下去直接覆寫，不用先刪
+  });
+  deck.addEventListener('change', function (e) {
+    if (e.target.matches('[data-qty]')) setQty(e.target.closest('.tile'), Number(e.target.value) || 0);
+  });
+
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     var i = Number(idxEl.textContent) - 1 + (e.key === 'ArrowRight' ? 1 : -1);
