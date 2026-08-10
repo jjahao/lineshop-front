@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>GRAND 天倉｜連線選購</title>
 <!-- 這頁刻意不含任何商品或價格。全部等 GAS 驗完會員身分才送過來。 -->
+<!-- 🔴 提前建連線，省 DNS+TLS 往返（2026-08-10 加速認證用） -->
+<link rel="preconnect" href="https://static.line-scdn.net">
+<link rel="preload" href="https://static.line-scdn.net/liff/edge/2/sdk.js" as="script">
+<link rel="preconnect" href="https://silent-unit-718clineshop-proxy.jjahao.workers.dev" crossorigin>
+<link rel="dns-prefetch" href="https://api.line.me">
 <style>
 :root{
   --ink:#1c2b2d; --ink-2:#4a5f5e; --line:#e2dbc7;
@@ -35,6 +40,12 @@ body{
 }
 .gate h1{font-size:17px; font-weight:600; letter-spacing:.02em}
 .gate p{font-size:13.5px; line-height:1.85; color:var(--ink-2)}
+/* 認證 spinner */
+.spin{width:22px; height:22px; margin:2px auto;
+  border:2.5px solid var(--line); border-block-start-color:var(--gold);
+  border-radius:50%; animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin[hidden]{display:none}
 .uid{
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px;
   background:var(--card); border:1px solid var(--line); border-radius:var(--r);
@@ -74,9 +85,13 @@ body{
 /* ── 選購畫面 ── */
 .app{
   height:100dvh; display:none; position:relative; overflow:hidden;
-  grid-template-rows:auto auto minmax(0,1fr) auto auto;
+  /* 六列：topbar / modebar / catbar(可藏) / deck(彈性) / dots+nav / cartbar
+     用 grid-row 釘位，catbar hidden 時第 3 列高度歸零不影響其他列。 */
+  grid-template-rows:auto auto auto minmax(0,1fr) auto auto;
 }
 .app[data-on]{display:grid}
+.app>.topbar{grid-row:1} .app>.modebar{grid-row:2} .app>.catbar{grid-row:3}
+.app>.deck{grid-row:4} .app>.dots{grid-row:5} .app>.cartbar{grid-row:6}
 .rail{
   position:absolute; inset-block:0; inset-inline-start:0; width:24px; z-index:2;
   display:flex; align-items:center; justify-content:center;
@@ -208,10 +223,17 @@ body{
 .app[data-cols="4"] .qtyrow,.app[data-cols="6"] .qtyrow{justify-content:flex-end}
 .app[data-cols="4"] .step[data-act="inc"],.app[data-cols="6"] .step[data-act="inc"]{
   background:var(--green); border-color:var(--green); color:#fff; font-weight:600}
-.dots{display:flex; gap:5px; justify-content:center; padding:8px 14px 3px; flex-wrap:wrap}
-.dot{width:5px; height:5px; border-radius:50%; background:var(--line); transition:.2s}
-.dot[data-on]{background:var(--gold); transform:scale(1.5)}
+.dots{display:flex; gap:6px; align-items:center; justify-content:center; padding:6px 14px 3px}
+.dot{width:8px; height:8px; border-radius:50%; background:var(--line); transition:.2s;
+  cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; flex:0 0 auto}
+.dot[data-on]{background:var(--gold); transform:scale(1.4)}
 @media (prefers-reduced-motion:reduce){ .dot{transition:none} }
+/* 分頁左右箭頭 */
+.pn{font:inherit; cursor:pointer; border:0; background:transparent; color:var(--ink-2);
+  font-size:22px; line-height:1; padding:4px 10px; flex:0 0 auto;
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent}
+.pn:active{color:var(--gold)}
+.pn[disabled]{opacity:.15; cursor:default}
 .cartbar{
   display:flex; align-items:center; gap:10px;
   padding:9px 14px calc(env(safe-area-inset-bottom) + 9px);
@@ -249,6 +271,7 @@ body{
   <img class="peek" id="peek" alt="本次連線商品預覽" hidden>
   <h1 id="gtitle">連線中…</h1>
   <p id="gmsg">正在確認你的會員身分</p>
+  <div class="spin" id="gspin"></div>
 
   <!-- 未綁定：先用手機後五碼認人（名單裡本來就有這欄，認到就自動綁定） -->
   <div class="bind" id="bind" hidden>
@@ -330,6 +353,8 @@ body{
   function say(title, msg, uid, btnText, onBtn) {
     document.getElementById('gtitle').textContent = title;
     document.getElementById('gmsg').textContent = msg;
+    var spin = document.getElementById('gspin');
+    if (spin) spin.hidden = true;   // 任何靜態訊息＝不再轉圈
     var u = document.getElementById('guid');
     u.hidden = !uid; if (uid) u.textContent = uid;
     var b = document.getElementById('gbtn');
@@ -423,11 +448,23 @@ body{
   }
 
   /* ---------- 啟動：LIFF 登入 → 拿 ID Token → 跟 GAS 換商品 ---------- */
+  /* 🔴 分步顯示進度（2026-08-10 James 回報「認證太久以為壞了」）：
+     讓客戶看到每一步在跑什麼、知道還在動，就不會關掉。 */
+  var gmsgEl = document.getElementById('gmsg');
+  var gspinEl = document.getElementById('gspin');
+  function progress(msg) { gmsgEl.textContent = msg; }
+
+  progress('① 連接 LINE 中…');
   liff.init({ liffId: LIFF_ID })
     .then(function () {
-      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return null; }
+      if (!liff.isLoggedIn()) {
+        progress('② 跳轉 LINE 登入，請稍候…');
+        liff.login({ redirectUri: location.href }); return null;
+      }
+      progress('② 確認身分中…');
       idToken = liff.getIDToken();
       if (!idToken) throw new Error('NO_ID_TOKEN');
+      progress('③ 載入商品中…');
       return askProducts(CAT, ALL);
     })
     .then(function (res) {
@@ -481,7 +518,10 @@ body{
   function renderCats() {
     var bar = document.getElementById('catbar');
     bar.textContent = '';
-    if (CATS.length < 2) { bar.hidden = true; return; }   // 只有一批就不佔畫面
+    // 🔴 改 < 1（2026-08-10 James 回報「看不到全部商品選項」）：
+    //    原本 < 2 在只有一批時把 catbar 整條藏起來（含「全部」按鈕），
+    //    但客戶就是要按「全部」才看得到舊批次的商品。
+    if (CATS.length < 1) { bar.hidden = true; return; }
     bar.hidden = false;
 
     // 🔴「全部」放第一顆（2026-08-10 James：只看最新一批商品太少，
@@ -553,29 +593,66 @@ body{
     return el;
   }
 
+  var curPage = 0;   // 目前停在哪一頁（IntersectionObserver 即時更新）
+
+  function gotoPage(i) {
+    var secs = deck.children;
+    if (i < 0 || i >= secs.length) return;
+    secs[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
   function layout(n) {
     app.dataset.cols = n;
     deck.innerHTML = ''; dotsEl.innerHTML = '';
     if (io) io.disconnect();
     var pages = Math.ceil(P.length / n);
+
     for (var i = 0; i < pages; i++) {
       var pg = document.createElement('section'); pg.className = 'page';
       P.slice(i * n, i * n + n).forEach(function (p) { pg.appendChild(tile(p)); });
       deck.appendChild(pg);
+    }
+
+    // ── 分頁導航：‹ 圓點 › ──
+    var prevBtn = document.createElement('button');
+    prevBtn.className = 'pn'; prevBtn.type = 'button';
+    prevBtn.textContent = '‹'; prevBtn.setAttribute('aria-label', '上一頁');
+    prevBtn.onclick = function () { gotoPage(curPage - 1); };
+    dotsEl.appendChild(prevBtn);
+
+    for (var j = 0; j < pages; j++) {
       var d = document.createElement('span'); d.className = 'dot';
-      if (i === 0) d.setAttribute('data-on', '');
+      if (j === 0) d.setAttribute('data-on', '');
+      d.onclick = (function (idx) { return function () { gotoPage(idx); }; })(j);
       dotsEl.appendChild(d);
     }
-    pagesEl.textContent = pages; idxEl.textContent = 1;
-    var dots = [].slice.call(dotsEl.children), secs = [].slice.call(deck.children);
+
+    var nextBtn = document.createElement('button');
+    nextBtn.className = 'pn'; nextBtn.type = 'button';
+    nextBtn.textContent = '›'; nextBtn.setAttribute('aria-label', '下一頁');
+    nextBtn.onclick = function () { gotoPage(curPage + 1); };
+    dotsEl.appendChild(nextBtn);
+
+    pagesEl.textContent = pages; idxEl.textContent = 1; curPage = 0;
+    // dots = 只有 .dot 元素（不含 .pn 按鈕）
+    var dots = [].slice.call(dotsEl.querySelectorAll('.dot'));
+    var secs = [].slice.call(deck.children);
+
+    function syncNav(i) {
+      curPage = i;
+      idxEl.textContent = i + 1;
+      dots.forEach(function (d, j) {
+        if (j === i) d.setAttribute('data-on', ''); else d.removeAttribute('data-on');
+      });
+      prevBtn.disabled = (i === 0);
+      nextBtn.disabled = (i === pages - 1);
+    }
+    syncNav(0);
+
     io = new IntersectionObserver(function (es) {
       es.forEach(function (en) {
         if (!en.isIntersecting) return;
-        var i = secs.indexOf(en.target);
-        idxEl.textContent = i + 1;
-        dots.forEach(function (d, j) {
-          if (j === i) d.setAttribute('data-on', ''); else d.removeAttribute('data-on');
-        });
+        syncNav(secs.indexOf(en.target));
       });
     }, { root: deck, threshold: 0.6 });
     secs.forEach(function (s) { io.observe(s); });
