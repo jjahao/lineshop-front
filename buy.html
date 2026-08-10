@@ -116,6 +116,11 @@ body{
 .catbar .new::before{content:"NEW"; font-size:9px; font-weight:700; letter-spacing:.06em;
   background:var(--green); color:#fff; border-radius:3px; padding:1px 3px; margin-inline-end:5px}
 .catbar .new[aria-pressed="true"]::before{background:#fff; color:var(--green)}
+/* 「全部」看起來要像個控制項，不像其中一批 */
+.catbar .all{border-color:var(--ink-2); color:var(--ink); font-weight:600}
+.catbar .all::before{content:"☰"; margin-inline-end:5px; opacity:.6}
+.catbar .all[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.catbar .all[aria-pressed="true"]::before{opacity:.85}
 .seg{display:flex; border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
 .seg button{
   font:inherit; font-size:12.5px; cursor:pointer; min-width:42px; height:30px;
@@ -455,6 +460,21 @@ body{
     bar.textContent = '';
     if (CATS.length < 2) { bar.hidden = true; return; }   // 只有一批就不佔畫面
     bar.hidden = false;
+
+    // 🔴「全部」放第一顆（2026-08-10 James：只看最新一批商品太少，
+    //    要能看到之前上架的才賣得動）。切分類購物車不清空 ⇒ 可以跨批一起買。
+    var total = CATS.reduce(function (s, c) { return s + c.count; }, 0);
+    var all = document.createElement('button');
+    all.type = 'button';
+    all.className = 'all';
+    all.appendChild(document.createTextNode('全部'));
+    var an = document.createElement('i');
+    an.textContent = total;
+    all.appendChild(an);
+    if (curAll) all.setAttribute('aria-pressed', 'true');
+    all.onclick = function () { switchCat('', true); };
+    bar.appendChild(all);
+
     CATS.forEach(function (c, i) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -470,11 +490,11 @@ body{
   }
 
   // 切分類不重新載入整頁，購物車也留著 —— 客戶可以跨批一次下單
-  function switchCat(cat) {
-    if (cat === curCat && !curAll) return;
+  function switchCat(cat, all) {
+    if (all ? curAll : (cat === curCat && !curAll)) return;
     var bar = document.getElementById('catbar');
     Array.prototype.forEach.call(bar.children, function (b) { b.disabled = true; });
-    askProducts(cat, false)
+    askProducts(cat, !!all)
       .then(function (res) {
         if (res && res.ok) { start(res); return; }
         say('讀不到這個分類', '請從 LINE 裡的連結重新進來一次。');
