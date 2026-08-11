@@ -63,6 +63,11 @@ body{
 /* 🔴 沒帶 ?card= 預覽圖時要真的不見。`display:block` 的優先度高過瀏覽器內建的
    `[hidden]{display:none}`，不補這行就會留下一個寫著 alt 文字的空框（2026-08-09 James 回報）。*/
 .peek[hidden]{display:none}
+/* 🔴 通則：`display:*` 的權重高過瀏覽器內建的 `[hidden]{display:none}`，
+   所以程式裡設 `hidden = true` 會完全沒作用。這個坑本檔已經踩四次
+   （`.peek` 2026-08-09、`.catbar`、`.bind`／`.joins` 2026-08-11）。
+   一次補通則，別再一個一個追加。 */
+[hidden]{display:none !important}
 .bind{display:grid; gap:9px; text-align:start; margin-block-start:4px}
 .bind label{font-size:12.5px; color:var(--ink-2); letter-spacing:.04em}
 .bind input{
@@ -362,6 +367,11 @@ body{
     u.hidden = !uid; if (uid) u.textContent = uid;
     var b = document.getElementById('gbtn');
     b.hidden = !btnText; if (btnText) { b.textContent = btnText; b.onclick = onBtn; }
+    /* 🔴 錯誤／提示畫面一律收掉認人表單（2026-08-11 James 回報「錯誤畫面下面
+       還叫客戶打字」）。只有 askLast5() 才該把這兩塊叫出來；say() 每一條路徑
+       都要關掉，否則兩種狀態疊在一起，客戶不知道該等還是該動。 */
+    document.getElementById('bind').hidden = true;
+    document.getElementById('joins').hidden = true;
     gate.style.display = 'grid'; app.removeAttribute('data-on');
   }
   function money(n) { return n.toLocaleString('en-US'); }
@@ -662,7 +672,6 @@ body{
 
   function layout(n) {
     app.dataset.cols = n;
-    deck.scrollLeft = 0;
     deck.innerHTML = ''; dotsEl.innerHTML = '';
     if (io) io.disconnect();
     var pages = Math.ceil(P.length / n);
@@ -672,6 +681,12 @@ body{
       P.slice(i * n, i * n + n).forEach(function (p) { pg.appendChild(tile(p)); });
       deck.appendChild(pg);
     }
+
+    /* 🔴 回第 1 頁必須寫在 pages 全部 append 完之後（2026-08-11 James 回報
+       「換分類跳到半路」）。寫在 innerHTML='' 之前等於白設：`.deck` 是
+       `scroll-snap-type:x mandatory`，內容重建後瀏覽器會把捲動位置吸回先前的
+       snap 目標（頁數變少時 clamp 到最後一頁），剛設的 0 會被蓋掉。 */
+    deck.scrollLeft = 0;
 
     // ── 分頁導航：‹ 圓點 › ──
     var prevBtn = document.createElement('button');
