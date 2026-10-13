@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>GRAND 天倉｜連線選購</title>
+<title>天倉｜連線選購</title>
 <!-- 這頁刻意不含任何商品或價格。全部等 GAS 驗完會員身分才送過來。 -->
 <!-- 🔴 提前建連線，省 DNS+TLS 往返（2026-08-10 加速認證用） -->
 <link rel="preconnect" href="https://static.line-scdn.net">
@@ -326,7 +326,7 @@ body{
     <h3 id="stitle">訂單確認</h3>
     <ul id="slist"></ul>
     <p class="sum">合計 <b id="stot">NT$0</b></p>
-    <p class="note" id="snote">送出後由 GRAND 依「先送單先得」處理，實際能不能買到以買手現場回報為準。</p>
+    <p class="note" id="snote">送出後由天倉依「先送單先得」處理，實際能不能買到以買手現場回報為準。</p>
     <div class="row">
       <button class="ghost" id="sback">再看看</button>
       <button class="go" id="sgo">確認送出</button>
@@ -560,7 +560,7 @@ body{
       (res.tier === 'list' ? '一般價　' : '會員價　') + (res.member || '');
     // 側邊直排標題：最新一批就標「最新一批」，讓客戶一眼知道這是今天的貨
     document.getElementById('rail').textContent =
-      curAll ? 'GRAND 全部連線' : ((res.is_latest ? '最新一批　' : '') + (curCat || 'GRAND 連線'));
+      curAll ? '天倉 全部連線' : ((res.is_latest ? '最新一批　' : '') + (curCat || '天倉 連線'));
     document.getElementById('total').textContent = P.length;
 
     renderCats();
